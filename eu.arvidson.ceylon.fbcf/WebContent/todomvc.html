@@ -1,0 +1,21 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
+<title>Todos</title>
+<link rel="stylesheet" href="css/todomvc/base.css">
+<script type="text/javascript" src="script/require/2.1.8/require.js"></script>
+<script type="text/javascript" src="script/native.js"></script>
+<script type="text/javascript">
+require.config({
+	baseUrl: 'modules',
+	paths: { }
+});
+
+window.onload = function() {
+	require(['eu/arvidson/ceylon/fbcf/1.0.0/eu.arvidson.ceylon.fbcf-1.0.0'], function (module) { module.run(); });            
+}
+</script>
+</head>
+<body></body>
+</html>

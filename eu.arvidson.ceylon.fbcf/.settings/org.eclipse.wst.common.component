@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="eu.arvidson.ceylon.fbcf">
+        <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <wb-resource deploy-path="/modules" source-path="/modules"/>
+        <property name="java-output-path" value="/eu.arvidson..fbcf/build/classes"/>
+        <property name="context-root" value="eu.arvidson.ceylon.fbcf"/>
+    </wb-module>
+</project-modules>

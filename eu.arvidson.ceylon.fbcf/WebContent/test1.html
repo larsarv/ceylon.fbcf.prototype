@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
+<title>Insert title here</title>
+<script type="text/javascript" src="script/require/2.1.8/require.js"></script>
+<script type="text/javascript" src="script/native.js"></script>
+<script type="text/javascript">
+
+require.config({
+	// location of our project's compiled modules
+    baseUrl: 'modules',
+    // locations of external dependencies here
+    paths: {
+    	// path to the Ceylon language module 
+        //'ceylon/language': '/script/ceylon/language'
+	}
+});
+//alias our hello module to 'h'
+
+require(['ceylon/language/1.0.0/ceylon.language-1.0.0']);
+
+var cw;
+require(['eu/arvidson/ceylon/fbcf/1.0.0/eu.arvidson.ceylon.fbcf-1.0.0'], function (module) { 
+	cw = module;
+});
+</script>
+ 
+ 
+</head>
+<body>
+	<dummy><b>test</b></dummy>
+	<div>
+		<input type="submit" value="Say hello" onclick="cw.testClick()" />
+	</div>
+	<div>
+		<span id="greeting"></span>
+	</div>
+</body>
+</html>
