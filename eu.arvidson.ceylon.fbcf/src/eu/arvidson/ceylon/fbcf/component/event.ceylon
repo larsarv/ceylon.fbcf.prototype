@@ -1,13 +1,14 @@
 import eu.arvidson.ceylon.fbcf.native { now }
+import ceylon.collection { HashSet }
 shared abstract class TemplateInstanceEvent() of initializeEvent | disposeEvent | updateViewEvent | updateModelEvent {
-	shared Set<TemplateInstanceEvent> asSet() => LazySet({this});
+	shared Set<TemplateInstanceEvent> asSet() => HashSet({this});
 }
 shared object initializeEvent extends TemplateInstanceEvent() {}
 shared object disposeEvent extends TemplateInstanceEvent() {}
 shared object updateViewEvent extends TemplateInstanceEvent() {}
 shared object updateModelEvent extends TemplateInstanceEvent() {}
 
-shared Set<TemplateInstanceEvent> allEventsSet = LazySet({initializeEvent,disposeEvent,updateViewEvent,updateModelEvent});
+shared Set<TemplateInstanceEvent> allEventsSet = HashSet({initializeEvent,disposeEvent,updateViewEvent,updateModelEvent});
 
 shared alias RegisterEventHandlerFunction => Anything(Anything(TemplateInstanceEvent), Set<TemplateInstanceEvent>);
 
@@ -20,7 +21,7 @@ shared class EventHandlerRegistry() {
 	}
 	shared void includeEventHandlers(EventHandlers eventHandlers) {
 		for (event in {initializeEvent, disposeEvent, updateViewEvent, updateModelEvent}) {
-			value set = LazySet({event});
+			value set = HashSet({event});
 			{Anything(TemplateInstanceEvent)*} handlers = eventHandlers.getEventHandlers(event);
 			for (handler in handlers) {
 				this.handlers.append([handler,set]);
