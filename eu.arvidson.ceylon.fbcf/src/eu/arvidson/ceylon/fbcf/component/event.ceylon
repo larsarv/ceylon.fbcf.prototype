@@ -13,47 +13,36 @@ shared Set<TemplateInstanceEvent> allEventsSet = HashSet({initializeEvent,dispos
 shared alias RegisterEventHandlerFunction => Anything(Anything(TemplateInstanceEvent), Set<TemplateInstanceEvent>);
 
 shared class EventHandlerRegistry() {
-	value handlers = SequenceBuilder<[Anything(TemplateInstanceEvent),Set<TemplateInstanceEvent>]>();
+	value initializeHandlers = SequenceBuilder<Anything(TemplateInstanceEvent)>();
+	value disposeHandlers = SequenceBuilder<Anything(TemplateInstanceEvent)>();
+	value updateViewHandlers = SequenceBuilder<Anything(TemplateInstanceEvent)>();
+	value updateModelHandlers = SequenceBuilder<Anything(TemplateInstanceEvent)>();
 
 	shared void registerEventHandler(Anything(TemplateInstanceEvent) eventHandler, Set<TemplateInstanceEvent> events) {
-		// Handlers will be placed in seqence in reverse order it was registered (last registerd will be first) 
-		handlers.append([eventHandler,events]);
+		for (event in events) {
+			switch (event)
+			case (initializeEvent) {
+				initializeHandlers.append(eventHandler);
+			}
+			case (disposeEvent) {
+				disposeHandlers.append(eventHandler);
+			}
+			case (updateViewEvent) {
+				updateViewHandlers.append(eventHandler);
+			}
+			case (updateModelEvent) {
+				updateModelHandlers.append(eventHandler);
+			}				
+		}
 	}
 	shared void includeEventHandlers(EventHandlers eventHandlers) {
-		for (event in {initializeEvent, disposeEvent, updateViewEvent, updateModelEvent}) {
-			value set = HashSet({event});
-			{Anything(TemplateInstanceEvent)*} handlers = eventHandlers.getEventHandlers(event);
-			for (handler in handlers) {
-				this.handlers.append([handler,set]);
-			}
-		}
+		initializeHandlers.appendAll(eventHandlers.getEventHandlers(initializeEvent));
+		disposeHandlers.appendAll(eventHandlers.getEventHandlers(disposeEvent));
+		updateViewHandlers.appendAll(eventHandlers.getEventHandlers(updateViewEvent));
+		updateModelHandlers.appendAll(eventHandlers.getEventHandlers(updateModelEvent));
 	}
 
 	shared EventHandlers createEventHandlers() {
-		value initializeHandlers = SequenceBuilder<Anything(TemplateInstanceEvent)>();
-		value disposeHandlers = SequenceBuilder<Anything(TemplateInstanceEvent)>();
-		value updateViewHandlers = SequenceBuilder<Anything(TemplateInstanceEvent)>();
-		value updateModelHandlers = SequenceBuilder<Anything(TemplateInstanceEvent)>();
-
-		for (entry in handlers.sequence) {
-			value handler = entry[0];
-			value events = entry[1];
-			for (event in events) {
-				switch (event)
-				case (initializeEvent) {
-					initializeHandlers.append(handler);
-				}
-				case (disposeEvent) {
-					disposeHandlers.append(handler);
-				}
-				case (updateViewEvent) {
-					updateViewHandlers.append(handler);
-				}
-				case (updateModelEvent) {
-					updateModelHandlers.append(handler);
-				}				
-			}
-		}
 		return EventHandlers(initializeHandlers.sequence, disposeHandlers.sequence, updateViewHandlers.sequence, updateModelHandlers.sequence);
 	}
 }
