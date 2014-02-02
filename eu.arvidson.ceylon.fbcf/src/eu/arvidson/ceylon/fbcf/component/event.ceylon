@@ -1,12 +1,27 @@
-import eu.arvidson.ceylon.fbcf.native { now }
 import ceylon.collection { HashSet }
+import eu.arvidson.ceylon.util { SingletonSet }
+
 shared abstract class TemplateInstanceEvent() of initializeEvent | disposeEvent | updateViewEvent | updateModelEvent {
-	shared Set<TemplateInstanceEvent> asSet() => HashSet({this});
+	shared formal Set<TemplateInstanceEvent> asSet();
 }
-shared object initializeEvent extends TemplateInstanceEvent() {}
-shared object disposeEvent extends TemplateInstanceEvent() {}
-shared object updateViewEvent extends TemplateInstanceEvent() {}
-shared object updateModelEvent extends TemplateInstanceEvent() {}
+shared object initializeEvent extends TemplateInstanceEvent() {
+	shared actual Set<TemplateInstanceEvent> asSet() => initializeEventSet;
+}
+shared object disposeEvent extends TemplateInstanceEvent() {
+	shared actual Set<TemplateInstanceEvent> asSet() => disposeEventSet;
+}
+shared object updateViewEvent extends TemplateInstanceEvent() {
+	shared actual Set<TemplateInstanceEvent> asSet() => updateViewEventSet;
+}
+shared object updateModelEvent extends TemplateInstanceEvent() {
+	shared actual Set<TemplateInstanceEvent> asSet() => updateModelEventSet;
+}
+
+Set<TemplateInstanceEvent> initializeEventSet = SingletonSet(initializeEvent);
+Set<TemplateInstanceEvent> disposeEventSet = SingletonSet(disposeEvent);
+Set<TemplateInstanceEvent> updateViewEventSet = SingletonSet(updateViewEvent);
+Set<TemplateInstanceEvent> updateModelEventSet = SingletonSet(updateModelEvent);
+
 
 shared Set<TemplateInstanceEvent> allEventsSet = HashSet({initializeEvent,disposeEvent,updateViewEvent,updateModelEvent});
 

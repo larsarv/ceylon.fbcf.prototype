@@ -16,8 +16,8 @@ shared class TodoItem(description) {
 
 shared class TodoList() {
 	shared variable String? newTodo = null;
-	//shared variable { TodoItem *} items = [ for (i in 1..500) TodoItem("Item ``i``") ].sequence;
-	shared variable { TodoItem *} items = empty;
+	shared variable { TodoItem *} items = [ for (i in 1..500) TodoItem("Item ``i``") ].sequence;
+	//shared variable { TodoItem *} items = empty;
 	shared variable TodoItem? editItem = null;
 
 	shared Boolean isEdit(TodoItem item) {
