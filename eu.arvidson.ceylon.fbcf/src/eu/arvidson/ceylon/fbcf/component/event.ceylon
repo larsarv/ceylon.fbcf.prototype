@@ -38,17 +38,20 @@ class SimpleEventHandlerEntry(prev, handler, events) satisfies EventHandlerEntry
 	Set<TemplateInstanceEvent> events;
 
 	shared actual void appendToSequenceBuilders(SequenceBuilder<EventHandlerFunction> initialize, SequenceBuilder<EventHandlerFunction> dispose, SequenceBuilder<EventHandlerFunction> updateView, SequenceBuilder<EventHandlerFunction> updateModel) {
-		if (initializeEvent in events) {
-			initialize.append(handler);
-		}
-		if (disposeEvent in events) {
-			dispose.append(handler);
-		}
-		if (updateViewEvent in events) {
-			updateView.append(handler);
-		}
-		if (updateModelEvent in events) {
-			updateModel.append(handler);
+		for (event in events) {
+			switch (event)
+			case (initializeEvent) {
+				initialize.append(handler);
+			}
+			case (disposeEvent) {
+				dispose.append(handler);
+			}
+			case (updateViewEvent) {
+				updateView.append(handler);
+			}
+			case (updateModelEvent) {
+				updateModel.append(handler);
+			}			
 		}
 		prev.appendToSequenceBuilders(initialize, dispose, updateView, updateModel);
 	}
