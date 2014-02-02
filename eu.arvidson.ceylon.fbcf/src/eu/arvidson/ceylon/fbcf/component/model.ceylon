@@ -1,5 +1,5 @@
 import ceylon.language.meta.model { Attribute, CeylonValue=Value, Method, Function }
-import ceylon.collection { HashMap }
+import ceylon.collection { HashMap, LinkedList }
 import eu.arvidson.ceylon.fbcf.native { log, now }
 
 shared alias Unsubscribe => Anything();
@@ -49,18 +49,19 @@ shared variable Integer baseValueCounterActive = 0;
 
 abstract class BaseValue<out GetType, in SetType>() satisfies Value<GetType, SetType> {
 	variable GetType|Uninitialized currentValue = uninitialized;
-	variable {Anything(GetType)*} observers = empty;
+//	variable {Anything(GetType)*} observers = empty;
+	variable LinkedList<Anything(GetType)> observers = LinkedList<Anything(GetType)>();
 	variable {Unsubscribe*} unsubs = empty;
 	
 	baseValueCounterActive += 1;
 
 	shared actual Unsubscribe observ(Anything(GetType) observer) {
-		observers = observers.following(observer);
+		observers.add(observer);
 		return unsubscribe(observer);
 	}
 	
 	void unsubscribe(Anything(GetType) observer)() {
-		observers = observers.select((Anything(GetType) element) => element != observer);
+		observers.removeElement(observer);
 	}
 
 	void invokeObservers() {
@@ -106,7 +107,7 @@ abstract class BaseValue<out GetType, in SetType>() satisfies Value<GetType, Set
 		for (unsub in unsubs) {
 			unsub();
 		}
-		observers = empty;
+		observers.clear();
 	}
 
 	shared void init(Anything(Anything(TemplateInstanceEvent),Set<TemplateInstanceEvent>) registerEventHandler, Boolean forceHandlerUpdate, <Unsubscribe?>* unsubs) {
@@ -610,13 +611,28 @@ class NopBinding<in Input>() satisfies Binding<Input, Value<Anything(), Nothing>
 	shared actual Value<Anything(),Nothing> bind(BindingContext ctx, Input input) => NopValue();
 }
 
-String? buildStringList({Boolean*} flags, List<String> strings) {
+String? buildStringList(Array<Boolean> flags, List<String> strings) {
+	value sb = StringBuilder();
+	variable Integer i = 0;
+	for (str in strings) {
+		if (flags[i] else false) {
+			sb.append(str);
+		}
+		i += 1;
+	}
+	if (sb.size == 0) {
+		return null;
+	} else {
+		return sb.string;
+	}
+/*
 	value result = " ".join(flags.indexed.filter((Integer->Boolean elem) => elem.item).map((Integer->Boolean elem) => strings[elem.key]).coalesced);
 	if (result.empty) {
 		return null;
 	} else {
 		return result;
 	}
+*/
 }
 
 class StringListValue(flags, strings) extends BaseValue<String?, Nothing>() {

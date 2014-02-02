@@ -114,12 +114,13 @@ class LCSRepeatController<in Input, OutputGet, in Type>(bindingLookup, container
 
 					dynamic item = document.createElement("repeatitem");
 					item.appendChild(newInstance.node);
+					value lcsEntry = LCSRepeatEntry(false, index++, removalFlag, item, createEventHandlers(newInstance.eventHandlerEntry));
 					//               map.put(obj, LCSRepeatEntry(false, index++, removalFlag, item, newInstance.eventHandler));
-					if (exists tmp = map.put(obj, LCSRepeatEntry(false, index++, removalFlag, item, newInstance.eventHandlers))) {
+					if (exists tmp = map.put(obj, lcsEntry)) {
 						throw Exception("Same object more than once in iterable not permitted: ``obj.string``");
 					}
 					container.appendChild(item);
-					newInstance.triggerEvent(initializeEvent);
+					lcsEntry.triggerEvent(initializeEvent);
 				}
 			}
 			Integer end = now();
@@ -189,7 +190,7 @@ class LCSRepeatController<in Input, OutputGet, in Type>(bindingLookup, container
 						value newInstance = template.instantiate(lookup, input);
 						dynamic item = document.createElement("repeatitem");
 						item.appendChild(newInstance.node);
-						if (exists tmp = map.put(obj, LCSRepeatEntry(true, state.index++, removalFlag, item, newInstance.eventHandlers))) {
+						if (exists tmp = map.put(obj, LCSRepeatEntry(true, state.index++, removalFlag, item, createEventHandlers(newInstance.eventHandlerEntry)))) {
 							throw Exception("Same object more than once in iterable not permitted: ``obj.string``");
 						}
 					}

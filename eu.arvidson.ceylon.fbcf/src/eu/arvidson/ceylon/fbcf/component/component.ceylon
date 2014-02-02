@@ -21,14 +21,10 @@ shared interface Linker<in Input> given Input satisfies Value {
 }
 
 
-shared class TemplateInstance(node, eventHandlers) {
+shared class TemplateInstance(node, eventHandlerEntry) {
 	shared dynamic node;
-	shared EventHandlers eventHandlers;
+	shared EventHandlerEntry eventHandlerEntry;
 	//shared Type obj;
-
-	shared void triggerEvent(TemplateInstanceEvent event) {
-		eventHandlers.triggerEvent(event);
-	}
 }
 shared class Template<in Input, out Type>(node, linker) given Input satisfies Value {
 	shared dynamic node;
@@ -41,9 +37,9 @@ shared class Template<in Input, out Type>(node, linker) given Input satisfies Va
 				StdTemplateInstantiationContext ctx = createTemplateInstantiationContext(bindingLookup, node, copy);
 				ctx.invoke(linker, input);
 				
-				return TemplateInstance(copy, ctx.getEventHandlers());
+				return TemplateInstance(copy, ctx.getEventHandlerEntry());
 			} else {
-				return TemplateInstance(copy, EventHandlers(empty, empty, empty, empty));
+				return TemplateInstance(copy, emptyEventHandlerEntry);
 			}
 		}
 	}

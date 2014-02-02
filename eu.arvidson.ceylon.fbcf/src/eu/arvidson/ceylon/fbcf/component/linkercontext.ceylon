@@ -83,7 +83,7 @@ class NodeProcessor(originalNode,clonedNode) {
 }
 
 shared interface StdTemplateInstantiationContext satisfies TemplateInstantiationContext {
-	shared formal EventHandlers getEventHandlers();
+	shared formal EventHandlerEntry getEventHandlerEntry();
 }
 
 class StdTemplateInstantiationContextImpl(parentLookup, nodeProcessor) satisfies StdTemplateInstantiationContext {
@@ -95,7 +95,7 @@ class StdTemplateInstantiationContextImpl(parentLookup, nodeProcessor) satisfies
 	shared actual BindingContext bindingContext = ChildBindingContext(parentLookup, eventHandlerRegistry.registerEventHandler);
 	
 	
-	shared actual EventHandlers getEventHandlers() => eventHandlerRegistry.createEventHandlers();
+	shared actual EventHandlerEntry getEventHandlerEntry() => eventHandlerRegistry.getEntry();
 	
 	shared actual void invoke<in Input>(Linker<Input> linker, Input model) given Input satisfies Value {
 		NodeWrapper warapper = nodeProcessor.findNode(linker);

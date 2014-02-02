@@ -6,9 +6,9 @@ shared void initializeAndAppendToBody(TemplateInstance(BindingLookup,EventHandle
 	value rootBindingLookup = RootBindingLookup();
 	
 	value instance = instantiator(rootBindingLookup, eventHandlerReistry);
-	eventHandlerReistry.includeEventHandlers(instance.eventHandlers);
+	eventHandlerReistry.addEntry(instance.eventHandlerEntry);
 	
-	EventHandlers eventHandlers = eventHandlerReistry.createEventHandlers();
+	EventHandlers eventHandlers = createEventHandlers(eventHandlerReistry.getEntry());
 	rootBindingLookup.eventHandlers = eventHandlers; 
 	dynamic {
 		dynamic element = document.body;

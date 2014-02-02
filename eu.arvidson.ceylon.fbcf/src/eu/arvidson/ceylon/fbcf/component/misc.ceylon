@@ -43,8 +43,8 @@ class ShowIfExistsController<Input,OutputGet,OutputSet,Type>(node, bindingLookup
 				value lookup = SimpleBindingLookup(output, outputValue, bindingLookup, bindingLookup.updateModel, bindingLookup.updateView);
 				value instance = fragmentTemplate.instantiate(lookup, input);
 
-				eventHandlerRegistry.includeEventHandlers(instance.eventHandlers);
-				value content = this.content = Content(outputValue, eventHandlerRegistry.createEventHandlers()); 
+				eventHandlerRegistry.addEntry(instance.eventHandlerEntry);
+				value content = this.content = Content(outputValue, createEventHandlers(eventHandlerRegistry.getEntry())); 
 
 				dynamic {
 					node.appendChild(instance.node);
