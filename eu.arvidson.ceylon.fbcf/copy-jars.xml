@@ -1,0 +1,14 @@
+<project default="copy">
+    <target name="clean">
+        <delete dir="WebContent/modules/eu"/>
+    </target>
+
+    <target name="copy">
+        <copy todir="WebContent/modules">
+			<fileset dir="modules">
+				<include name="**/*.js"/>
+			</fileset>
+        </copy>
+    </target>
+
+</project>
