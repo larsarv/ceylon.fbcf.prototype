@@ -616,6 +616,9 @@ String? buildStringList(Array<Boolean> flags, List<String> strings) {
 	variable Integer i = 0;
 	for (str in strings) {
 		if (flags[i] else false) {
+			if (i > 0) {
+				sb.append(" ");
+			}
 			sb.append(str);
 		}
 		i += 1;
