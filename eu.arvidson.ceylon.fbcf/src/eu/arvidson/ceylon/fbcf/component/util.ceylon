@@ -1,14 +1,13 @@
 import eu.arvidson.ceylon.fbcf.native { log }
 
-shared void initializeAndAppendToBody(TemplateInstance(BindingLookup,EventHandlerRegistry) instantiator) {
+shared void initializeAndAppendToBody(TemplateInstance(TemplateInstanceContext) instantiator) {
 	Integer start = system.milliseconds;
 	value eventHandlerReistry = EventHandlerRegistry();
 	value rootBindingLookup = RootBindingLookup();
 	
-	value instance = instantiator(rootBindingLookup, eventHandlerReistry);
-	eventHandlerReistry.addEntry(instance.eventHandlerEntry);
+	value instance = instantiator(TemplateInstanceContext(rootBindingLookup, eventHandlerReistry.registerEventHandler));
 	
-	EventHandlers eventHandlers = createEventHandlers(eventHandlerReistry.getEntry());
+	EventHandlers eventHandlers = eventHandlerReistry.createEventHandlers();
 	rootBindingLookup.eventHandlers = eventHandlers; 
 	dynamic {
 		dynamic element = document.body;

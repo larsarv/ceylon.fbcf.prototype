@@ -20,26 +20,29 @@ shared interface Linker<in Input> given Input satisfies Value {
 	shared formal Linker<Input> duplicate(TemplateDuplicationContext ctx, dynamic node);
 }
 
+shared class TemplateInstanceContext(bindingLookup,registerEventHandler) {
+	shared BindingLookup bindingLookup; 
+	shared RegisterEventHandlerFunction registerEventHandler;
+}
 
-shared class TemplateInstance(node, eventHandlerEntry) {
+shared class TemplateInstance(node) {
 	shared dynamic node;
-	shared EventHandlerEntry eventHandlerEntry;
 	//shared Type obj;
 }
 shared class Template<in Input, out Type>(node, linker) given Input satisfies Value {
 	shared dynamic node;
 	shared Linker<Input>? linker;
 	
-	shared TemplateInstance instantiate(BindingLookup bindingLookup, Input input) {
+	shared TemplateInstance instantiate(TemplateInstanceContext context, Input input) {
 		dynamic {
 			dynamic copy = node.cloneNode(true);
 			if (exists linker) {
-				StdTemplateInstantiationContext ctx = createTemplateInstantiationContext(bindingLookup, node, copy);
+				TemplateInstantiationContext ctx = createTemplateInstantiationContext(context, node, copy);
 				ctx.invoke(linker, input);
 				
-				return TemplateInstance(copy, ctx.getEventHandlerEntry());
+				return TemplateInstance(copy);
 			} else {
-				return TemplateInstance(copy, emptyEventHandlerEntry);
+				return TemplateInstance(copy);
 			}
 		}
 	}

@@ -107,14 +107,15 @@ class LCSRepeatController<in Input, OutputGet, in Type>(bindingLookup, container
 			variable Integer index = 1;
 			for (obj in sequence) {
 				dynamic {
+					value eventHandlerRegistry = EventHandlerRegistry();
 					value outputValue = ConstantValue<OutputGet>(obj);
 
 					value lookup = SimpleBindingLookup(output, outputValue, bindingLookup, bindingLookup.updateModel, bindingLookup.updateView);
-					value newInstance = template.instantiate(lookup, input);
+					value newInstance = template.instantiate(TemplateInstanceContext(lookup, eventHandlerRegistry.registerEventHandler), input);
 
 					dynamic item = document.createElement("repeatitem");
 					item.appendChild(newInstance.node);
-					value lcsEntry = LCSRepeatEntry(false, index++, removalFlag, item, createEventHandlers(newInstance.eventHandlerEntry));
+					value lcsEntry = LCSRepeatEntry(false, index++, removalFlag, item, eventHandlerRegistry.createEventHandlers());
 					//               map.put(obj, LCSRepeatEntry(false, index++, removalFlag, item, newInstance.eventHandler));
 					if (exists tmp = map.put(obj, lcsEntry)) {
 						throw Exception("Same object more than once in iterable not permitted: ``obj.string``");
@@ -185,12 +186,13 @@ class LCSRepeatController<in Input, OutputGet, in Type>(bindingLookup, container
 				} else {
 					// Obj is new, create entry in new map for it
 					dynamic {
+						value eventHandlerRegistry = EventHandlerRegistry();
 						value outputValue = ConstantValue<OutputGet>(obj);
 						value lookup = SimpleBindingLookup(output, outputValue, bindingLookup, bindingLookup.updateModel, bindingLookup.updateView);
-						value newInstance = template.instantiate(lookup, input);
+						value newInstance = template.instantiate(TemplateInstanceContext(lookup, eventHandlerRegistry.registerEventHandler), input);
 						dynamic item = document.createElement("repeatitem");
 						item.appendChild(newInstance.node);
-						if (exists tmp = map.put(obj, LCSRepeatEntry(true, state.index++, removalFlag, item, createEventHandlers(newInstance.eventHandlerEntry)))) {
+						if (exists tmp = map.put(obj, LCSRepeatEntry(true, state.index++, removalFlag, item, eventHandlerRegistry.createEventHandlers()))) {
 							throw Exception("Same object more than once in iterable not permitted: ``obj.string``");
 						}
 					}

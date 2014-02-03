@@ -314,7 +314,6 @@ class ChildBindingLookup(map, parent, updateModel, updateView) satisfies Binding
 shared class ChildBindingContext(BindingLookup parent, registerEventHandler) satisfies BindingContext {
 	value map = HashMap<Object, Value<Anything,Nothing>>();
 	ChildBindingLookup lookup = ChildBindingLookup(map, parent, parent.updateModel, parent.updateView);
-	
 
 	shared actual BindingLookup getLookup() => lookup;
 

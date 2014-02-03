@@ -1,5 +1,5 @@
 import eu.arvidson.ceylon.fbcf.native { log, now }
-import eu.arvidson.ceylon.fbcf.component { RWValue, Repeat, Value, Template, Event, ShowIfExists, EventHandler, rwroot, Text, simpleRWValue, BindingLookup, EventHandlerRegistry, initializeAndAppendToBody }
+import eu.arvidson.ceylon.fbcf.component { RWValue, Repeat, Value, Template, Event, ShowIfExists, EventHandler, rwroot, Text, simpleRWValue, BindingLookup, EventHandlerRegistry, initializeAndAppendToBody, RegisterEventHandlerFunction, TemplateInstanceContext }
 import eu.arvidson.ceylon.fbcf.component.html5 { div, br, button, h1, h2, span, input, attrType, propValue }
 
 
@@ -84,8 +84,8 @@ Template<Value<TestData?,TestData?>,Anything> buildTemplate() {
 shared void testClick() {
 	value template = buildTemplate();
 	
-	initializeAndAppendToBody((BindingLookup bindingLookup, EventHandlerRegistry eventHandlerRegistry) {
-		return template.instantiate(bindingLookup, simpleRWValue<TestData?>(null, eventHandlerRegistry.registerEventHandler));
+	initializeAndAppendToBody((TemplateInstanceContext context) {
+		return template.instantiate(context, simpleRWValue<TestData?>(null, context.registerEventHandler));
 	});
 	
 }

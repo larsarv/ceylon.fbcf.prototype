@@ -82,20 +82,12 @@ class NodeProcessor(originalNode,clonedNode) {
 
 }
 
-shared interface StdTemplateInstantiationContext satisfies TemplateInstantiationContext {
-	shared formal EventHandlerEntry getEventHandlerEntry();
-}
-
-class StdTemplateInstantiationContextImpl(parentLookup, nodeProcessor) satisfies StdTemplateInstantiationContext {
-	BindingLookup parentLookup;
+class TemplateInstantiationContextImpl(context, nodeProcessor) satisfies TemplateInstantiationContext {
+	TemplateInstanceContext context;
 	NodeProcessor nodeProcessor;
 
-	EventHandlerRegistry eventHandlerRegistry = EventHandlerRegistry();
- 
-	shared actual BindingContext bindingContext = ChildBindingContext(parentLookup, eventHandlerRegistry.registerEventHandler);
+	shared actual BindingContext bindingContext = ChildBindingContext(context.bindingLookup, context.registerEventHandler);
 	
-	
-	shared actual EventHandlerEntry getEventHandlerEntry() => eventHandlerRegistry.getEntry();
 	
 	shared actual void invoke<in Input>(Linker<Input> linker, Input model) given Input satisfies Value {
 		NodeWrapper warapper = nodeProcessor.findNode(linker);
@@ -108,12 +100,14 @@ class StdTemplateInstantiationContextImpl(parentLookup, nodeProcessor) satisfies
 		return bindingContext.bind(input, binding);
 	}
 	
-	shared actual void registerEventHandler(Anything(TemplateInstanceEvent) eventHandler, Set<TemplateInstanceEvent> events) => eventHandlerRegistry.registerEventHandler(eventHandler, events);
+	shared actual void registerEventHandler(Anything(TemplateInstanceEvent) eventHandler, Set<TemplateInstanceEvent> events) => context.registerEventHandler(eventHandler, events);
 }
-shared StdTemplateInstantiationContext createTemplateInstantiationContext(BindingLookup parentLookup, dynamic originalNode, dynamic clonedNode) {
+shared TemplateInstantiationContext createTemplateInstantiationContext(TemplateInstanceContext context, dynamic originalNode, dynamic clonedNode) {
+	NodeProcessor nodeProcessor;
 	dynamic {
-		return StdTemplateInstantiationContextImpl(parentLookup, NodeProcessor(originalNode, clonedNode));
+		nodeProcessor = NodeProcessor(originalNode, clonedNode);
 	}
+	return TemplateInstantiationContextImpl(context, nodeProcessor);
 }
 
 class StdTemplateDuplicationContextImpl(nodeProcessor) satisfies TemplateDuplicationContext {
