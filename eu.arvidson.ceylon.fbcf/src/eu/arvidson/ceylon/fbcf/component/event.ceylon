@@ -63,7 +63,7 @@ shared class EventHandlers(initializeHandlers, disposeHandlers, updateViewHandle
 	{Anything(TemplateInstanceEvent)*} updateViewHandlers;
 	{Anything(TemplateInstanceEvent)*} updateModelHandlers;
 	
-	shared {Anything(TemplateInstanceEvent)*} getEventHandlers(TemplateInstanceEvent event) {
+	{Anything(TemplateInstanceEvent)*} getEventHandlers(TemplateInstanceEvent event) {
 		switch (event)
 		case (initializeEvent) {
 			return initializeHandlers;
