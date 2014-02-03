@@ -1,5 +1,5 @@
 import ceylon.language.meta.model { Attribute, CeylonValue=Value, Method, Function }
-import ceylon.collection { HashMap, LinkedList }
+import ceylon.collection { LinkedList }
 import eu.arvidson.ceylon.fbcf.native { log, now }
 import eu.arvidson.ceylon.jsinterop { JsMapWrapper }
 

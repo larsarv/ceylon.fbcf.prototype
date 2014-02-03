@@ -1,4 +1,4 @@
-import eu.arvidson.ceylon.fbcf.component { simpleROValue, Template, Fragment, roroot, Text, Repeat, Value, noargs, stringList, BindingLookup, EventHandlerRegistry, initializeAndAppendToBody, Tuple1, RegisterEventHandlerFunction, TemplateInstanceContext }
+import eu.arvidson.ceylon.fbcf.component { simpleROValue, Template, Fragment, roroot, Text, Repeat, Value, noargs, stringList, initializeAndAppendToBody, Tuple1, TemplateInstanceContext }
 import eu.arvidson.ceylon.fbcf.component.html5 { section, header, h1, input, ul, label, footer, span, strong, p, a, div, button, li, attrId, attrType, attrFor, attrHref, attrClass, attrStyle, attrPlaceholder, onClick, onDblClick, propValue, onEnter, propChecked, doFocus, onBlur, HtmlFlow }
 
 
@@ -16,8 +16,8 @@ shared class TodoItem(description) {
 
 shared class TodoList() {
 	shared variable String? newTodo = null;
-	shared variable { TodoItem *} items = [ for (i in 1..500) TodoItem("Item ``i``") ].sequence;
-	//shared variable { TodoItem *} items = empty;
+	//shared variable { TodoItem *} items = [ for (i in 1..500) TodoItem("Item ``i``") ].sequence;
+	shared variable { TodoItem *} items = empty;
 	shared variable TodoItem? editItem = null;
 
 	shared Boolean isEdit(TodoItem item) {

@@ -1,4 +1,4 @@
-import eu.arvidson.ceylon.fbcf.component { TemplateDuplicationContext, Value, observe, EventHandler, ElementModifier, TemplateInstantiationContext, Linker, Binding }
+import eu.arvidson.ceylon.fbcf.component { Value, EventHandler, Binding }
 shared EventHandler<Input,Anything(),Nothing> onClick<in Input>(Binding<Input,Value<Anything(),Nothing>> arg) given Input satisfies Value {
 	return EventHandler(arg, "click", (Value<Anything(),Nothing> arg, dynamic event) {
 		arg.get()();
