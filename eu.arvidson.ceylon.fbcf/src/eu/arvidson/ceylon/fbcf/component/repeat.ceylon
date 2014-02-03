@@ -1,6 +1,6 @@
 import eu.arvidson.ceylon.fbcf.native { log, now }
-import ceylon.collection { HashMap }
 import eu.arvidson.ceylon.fbcf.component { Template, disposeEvent, initializeEvent, TemplateInstanceEvent, Component, Linker }
+import eu.arvidson.ceylon.jsinterop { JsMapWrapper }
 
 class LCSRepeatEntry(init, index, removalFlag, node, eventHandlers) {
 	shared variable Boolean init;
@@ -83,16 +83,14 @@ class LCSRepeatController<in Input, OutputGet, in Type>(bindingLookup, container
 	OutputBinding<Input,Value<OutputGet,Nothing>> output;
 	Input input;
 
-	HashMap<OutputGet,LCSRepeatEntry> map = HashMap<OutputGet,LCSRepeatEntry>();
+	JsMapWrapper<OutputGet,LCSRepeatEntry> map = JsMapWrapper<OutputGet,LCSRepeatEntry>();
 	variable Boolean removalFlag = false;
 	
 	shared void eventHandler(TemplateInstanceEvent event) {
 		if (event == initializeEvent) {
 			
 		} else {
-			for (LCSRepeatEntry instance in map.values) {
-				instance.triggerEvent(event);
-			}		
+			map.eachEntry((OutputGet key, LCSRepeatEntry item) => item.triggerEvent(event));
 		}
 		if (event == disposeEvent) {
 			map.clear();
@@ -130,9 +128,7 @@ class LCSRepeatController<in Input, OutputGet, in Type>(bindingLookup, container
 			log("Repeat with empty new sequence, clear all content");
 			Integer start = now();
 			dynamic {
-				for (entry in map.values) {
-					entry.triggerEvent(disposeEvent);
-				}
+				map.eachEntry((OutputGet key, LCSRepeatEntry item) => item.triggerEvent(disposeEvent));
 				while (container.hasChildNodes()) {
 					dynamic firstChild = container.firstChild;
 					if (exists firstChild) {
@@ -205,13 +201,17 @@ class LCSRepeatController<in Input, OutputGet, in Type>(bindingLookup, container
 			Integer t1 = now();
 			// Remove old unused instance
 			log("Entries in map before remove: ``map.size``");
-			dynamic {
-				for (entry in map.filter((OutputGet->LCSRepeatEntry elem) => elem.item.removalFlag != removalFlag).sequence) {
-					entry.item.triggerEvent(disposeEvent);
-					container.removeChild(entry.item.node);
-					map.remove(entry.key);
+			map.eachEntry((OutputGet key, LCSRepeatEntry item) {
+				if (item.removalFlag != removalFlag) {
+					item.triggerEvent(disposeEvent);
+					dynamic {
+						container.removeChild(item.node);
+					}
+					map.remove(key);
 				}
-			}
+				return null;
+			});
+
 			log("Entries in map after remove: ``map.size``");
 			Integer t2 = now();
 			
@@ -257,7 +257,7 @@ class LCSRepeatController<in Input, OutputGet, in Type>(bindingLookup, container
 	[OutputGet, LCSRepeatEntry]? nextLcsEntry(Iterator<OutputGet> iter) {
 		value next = iter.next();
 		if (is OutputGet next) {
-			value entry = map[next];
+			value entry = map.get(next);
 			assert(exists entry);
 			return [next, entry];
 		} else {

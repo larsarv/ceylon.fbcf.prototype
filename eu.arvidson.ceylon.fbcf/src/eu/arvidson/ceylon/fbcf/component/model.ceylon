@@ -1,6 +1,7 @@
 import ceylon.language.meta.model { Attribute, CeylonValue=Value, Method, Function }
 import ceylon.collection { HashMap, LinkedList }
 import eu.arvidson.ceylon.fbcf.native { log, now }
+import eu.arvidson.ceylon.jsinterop { JsMapWrapper }
 
 shared alias Unsubscribe => Anything();
  
@@ -299,7 +300,7 @@ shared Value<Type,Type> simpleRWValue<Type>(Type val, RegisterEventHandlerFuncti
 
 
 class ChildBindingLookup(map, parent, updateModel, updateView) satisfies BindingLookup {
-	HashMap<Object, Value<Anything,Nothing>> map;
+	JsMapWrapper<Object, Value<Anything,Nothing>> map;
 	BindingLookup parent;
 
 	shared actual Result? lookup<Input,Result>(Binding<Input,Result> binding) given Input satisfies Value given Result satisfies Value {
@@ -312,7 +313,7 @@ class ChildBindingLookup(map, parent, updateModel, updateView) satisfies Binding
 	shared actual void updateView();
 }
 shared class ChildBindingContext(BindingLookup parent, registerEventHandler) satisfies BindingContext {
-	value map = HashMap<Object, Value<Anything,Nothing>>();
+	value map = JsMapWrapper<Object, Value<Anything,Nothing>>();
 	ChildBindingLookup lookup = ChildBindingLookup(map, parent, parent.updateModel, parent.updateView);
 
 	shared actual BindingLookup getLookup() => lookup;
