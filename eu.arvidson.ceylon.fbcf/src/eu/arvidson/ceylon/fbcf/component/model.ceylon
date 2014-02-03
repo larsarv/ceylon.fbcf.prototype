@@ -550,7 +550,7 @@ class CallableMethodValue<Container,out Get,Arguments>(Container container,metho
 	}
 
 	Get invoke() {
-		// return fun(*arguments); TODO FIX when compiler bug is fixed
+		//return fun(*arguments); //TODO FIX when compiler bug is fixed
 		return invoker(fun);
 	}
 }
@@ -663,15 +663,41 @@ class StringListBinding<in Input>(args) satisfies Binding<Input,Value<String?,No
 	{[Binding<Input,Value<Boolean,Nothing>>,String]+} args;
 
 	shared actual Value<String?,Nothing> bind(BindingContext ctx, Input input) {
+		value values = SequenceBuilder<Value<Boolean,Nothing>>();
+		value flags = SequenceBuilder<Boolean>();
+		value strings = SequenceBuilder<String>();
+		value unsubs =  SequenceBuilder<Anything()?>();
+
+		for (arg in args) {
+			value val = arg[0].bind(ctx, input); 
+			values.append(val);
+			flags.append(val.get());
+			strings.append(arg[1]);
+		}
+
+		value result = StringListValue(Array(flags.sequence), strings.sequence);
+
+		variable Integer index = 0;
+		for (val in values.sequence) {
+			unsubs.append(val.observ(result.update(index++)));
+		}
+
+		result.init(ctx.registerEventHandler, false, *unsubs.sequence);
+		return result;
+	}
+/* This implementation do not perform very well atm...
+	shared actual Value<String?,Nothing> bind(BindingContext ctx, Input input) {
 		value values = args.map(([Binding<Input,Value<Boolean,Nothing>>, String] elem) => elem[0].bind(ctx, input));
 		value flags = Array(values.map((Value<Boolean,Nothing> elem) => elem.get()));
 		value strings = Array(args.map(([Binding<Input,Value<Boolean,Nothing>>, String] elem) => elem[1]));
 		value result = StringListValue(flags, strings);
 		
 		value unsubs = values.indexed.collect((Integer->Value<Boolean,Nothing> element) => element.item.observ(result.update(element.key)));
-		result.init(ctx.registerEventHandler, false, *unsubs);
+		
+		result.init(ctx.registerEventHandler, false, *unsubs.sequence);
 		return result;
 	}
+*/
 }
 
 shared Binding<Input,Value<String?,Nothing>> stringList<in Input>({[Binding<Input,Value<Boolean,Nothing>>,String]+} args) given Input satisfies Value {
