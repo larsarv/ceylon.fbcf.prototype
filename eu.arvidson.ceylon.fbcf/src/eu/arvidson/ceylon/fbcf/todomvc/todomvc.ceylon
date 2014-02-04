@@ -197,3 +197,7 @@ shared class TodoMvc() {
 		});
 	}
 }
+
+shared void startTodoMvc() {
+	TodoMvc().run();
+}

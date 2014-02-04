@@ -47,7 +47,7 @@ shared alias ElementModifier<in Input> given Input satisfies Value => OriginalEl
 //shared Component<Input> body<in Input>({CommonContent<Input>*} content = empty) given Input satisfies Value => Element("body", content);
 shared Component<Input,HtmlFlow> article<in Input>({CommonContent<Input,HtmlFlow>*} content = empty) given Input satisfies Value => Element<Input,HtmlFlow>("article", content);
 shared Component<Input,HtmlFlow> section<in Input>({CommonContent<Input,HtmlFlow>*} content = empty) given Input satisfies Value => Element<Input,HtmlFlow>("section", content);
-shared Component<Input,HtmlFlow> nav<in Input>({CommonContent<Input,HtmlFlow>*} content = empty) given Input satisfies Value => Element<Input,HtmlFlow>("nav", content);
+shared Component<Input,Type> nav<in Input, out Type=HtmlFlow>({CommonContent<Input,HtmlFlow>*} content = empty) given Input satisfies Value => Element<Input,Type>("nav", content);
 shared Component<Input,HtmlFlow> aside<in Input>({CommonContent<Input,HtmlFlow>*} content = empty) given Input satisfies Value => Element<Input,HtmlFlow>("aside", content);
 shared Component<Input,HtmlFlow> h1<in Input>({CommonContent<Input,HtmlPhrasing>*} content = empty) given Input satisfies Value => Element<Input,HtmlFlow>("h1", content);
 shared Component<Input,HtmlFlow> h2<in Input>({CommonContent<Input,HtmlPhrasing>*} content = empty) given Input satisfies Value => Element<Input,HtmlFlow>("h2", content);
