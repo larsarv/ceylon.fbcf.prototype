@@ -1,5 +1,4 @@
-import eu.arvidson.ceylon.fbcf.native { log, now }
-import eu.arvidson.ceylon.fbcf.component { Template, disposeEvent, initializeEvent, TemplateInstanceEvent, Component, Linker }
+import eu.arvidson.ceylon.jsinterop.native { log, now }
 import eu.arvidson.ceylon.jsinterop { JsMapWrapper }
 
 class LCSRepeatEntry(init, index, removalFlag, node, eventHandlers) {

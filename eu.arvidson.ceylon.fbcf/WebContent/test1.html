@@ -5,7 +5,6 @@
 <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
 <title>Insert title here</title>
 <script type="text/javascript" src="script/require/2.1.8/require.js"></script>
-<script type="text/javascript" src="script/native.js"></script>
 <script type="text/javascript">
 
 require.config({
@@ -17,12 +16,13 @@ require.config({
         //'ceylon/language': '/script/ceylon/language'
 	}
 });
-//alias our hello module to 'h'
-
+</script>
+<script type="text/javascript" src="script/jsinterop.js"></script>
+<script type="text/javascript">
 require(['ceylon/language/1.0.0/ceylon.language-1.0.0']);
 
 var cw;
-require(['eu/arvidson/ceylon/fbcf/1.0.0/eu.arvidson.ceylon.fbcf-1.0.0'], function (module) { 
+require(['eu/arvidson/ceylon/fbcf/todomvc/1.0.0/eu.arvidson.ceylon.fbcf.todomvc-1.0.0'], function (module) { 
 	cw = module;
 });
 </script>

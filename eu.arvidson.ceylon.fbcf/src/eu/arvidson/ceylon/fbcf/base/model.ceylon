@@ -1,6 +1,6 @@
 import ceylon.language.meta.model { Attribute, CeylonValue=Value, Method, Function }
 import ceylon.collection { LinkedList }
-import eu.arvidson.ceylon.fbcf.native { log, now }
+import eu.arvidson.ceylon.jsinterop.native { log, now }
 import eu.arvidson.ceylon.jsinterop { JsMapWrapper }
 
 shared alias Unsubscribe => Anything();

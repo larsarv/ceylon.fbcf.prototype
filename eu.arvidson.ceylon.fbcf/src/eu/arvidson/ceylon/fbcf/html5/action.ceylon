@@ -1,4 +1,5 @@
-import eu.arvidson.ceylon.fbcf.component { TemplateDuplicationContext, Value, observe, ElementModifier, TemplateInstantiationContext, Linker, Binding }
+import eu.arvidson.ceylon.fbcf.base { TemplateDuplicationContext, Value, observe, ElementModifier, TemplateInstantiationContext, Linker, Binding }
+
 class FokusController(dynamic node) {
 	variable Boolean current = false;
 	

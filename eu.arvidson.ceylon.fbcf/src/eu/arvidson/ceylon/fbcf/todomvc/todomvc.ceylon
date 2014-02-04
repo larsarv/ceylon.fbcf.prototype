@@ -1,5 +1,5 @@
-import eu.arvidson.ceylon.fbcf.component { simpleROValue, Template, Fragment, roroot, Text, Repeat, Value, noargs, stringList, initializeAndAppendToBody, Tuple1, TemplateInstanceContext }
-import eu.arvidson.ceylon.fbcf.component.html5 { section, header, h1, input, ul, label, footer, span, strong, p, a, div, button, li, attrId, attrType, attrFor, attrHref, attrClass, attrStyle, attrPlaceholder, onClick, onDblClick, propValue, onEnter, propChecked, doFocus, onBlur, HtmlFlow }
+import eu.arvidson.ceylon.fbcf.base { simpleROValue, Template, Fragment, roroot, Text, Repeat, Value, noargs, stringList, initializeAndAppendToBody, Tuple1, TemplateInstanceContext }
+import eu.arvidson.ceylon.fbcf.html5 { section, header, h1, input, ul, label, footer, span, strong, p, a, div, button, li, attrId, attrType, attrFor, attrHref, attrClass, attrStyle, attrPlaceholder, onClick, onDblClick, propValue, onEnter, propChecked, doFocus, onBlur, HtmlFlow }
 
 
 

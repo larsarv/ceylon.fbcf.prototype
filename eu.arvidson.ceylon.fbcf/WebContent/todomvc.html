@@ -5,16 +5,16 @@
 <title>Todos</title>
 <link rel="stylesheet" href="css/todomvc/base.css">
 <script type="text/javascript" src="script/require/2.1.8/require.js"></script>
-<script type="text/javascript" src="script/native.js"></script>
-<script type="text/javascript" src="script/jsinterop.js"></script>
 <script type="text/javascript">
 require.config({
 	baseUrl: 'modules',
 	paths: { }
 });
-
+</script>
+<script type="text/javascript" src="script/jsinterop.js"></script>
+<script type="text/javascript">
 window.onload = function() {
-	require(['eu/arvidson/ceylon/todomvc/1.0.0/eu.arvidson.ceylon.todomvc-1.0.0'], function (module) { module.run(); });            
+	require(['eu/arvidson/ceylon/fbcf/todomvc/1.0.0/eu.arvidson.ceylon.fbcf.todomvc-1.0.0'], function (module) { module.run(); });            
 }
 </script>
 </head>

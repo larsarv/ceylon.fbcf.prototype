@@ -1,4 +1,4 @@
-import eu.arvidson.ceylon.fbcf.component { OptionalStringBinding, Value, Property, Binding }
+import eu.arvidson.ceylon.fbcf.base { OptionalStringBinding, Value, Property, Binding }
 
 shared Property<Input,Value<String?,String?>> propValue<in Input>(OptionalStringBinding<Input, String?> arg) given Input satisfies Value {
 	return Property("value", arg);

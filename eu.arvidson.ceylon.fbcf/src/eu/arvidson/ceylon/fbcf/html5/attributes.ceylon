@@ -1,4 +1,4 @@
-import eu.arvidson.ceylon.fbcf.component { Attribute, AttributeValue, Value }
+import eu.arvidson.ceylon.fbcf.base { Attribute, AttributeValue, Value }
 
 shared Attribute<Input> attrAccesskey<in Input>(AttributeValue<Input> val) given Input satisfies Value => Attribute("accesskey", val);
 shared Attribute<Input> attrClass<in Input>(AttributeValue<Input> val) given Input satisfies Value => Attribute("class", val);

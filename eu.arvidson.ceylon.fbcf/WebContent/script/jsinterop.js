@@ -1,4 +1,45 @@
 
+require(['eu/arvidson/ceylon/jsinterop/1.0.0/eu.arvidson.ceylon.jsinterop-1.0.0'], function (module) {             
+	// Native package
+	
+	module.log$native = function(arg) {
+		if (console) {
+			console.log(arg);
+		}
+	};
+	module.now$native = function() {
+		return Date.now();
+	};
+	module.nodeListToArray$native = function(nodeList) {
+		var array = [];
+		// iterate backwards ensuring that length is an UInt32
+		for (var i = 0; i < nodeList.length; i++) { 
+			array.push(nodeList[i]);
+		}
+		return array;
+	};
+	module.setObjectProperty$native = function(obj, name, val) {
+		obj[name] = val;
+	};
+	module.getObjectProperty$native = function(obj, name) {
+		return obj[name];
+	};
+	
+	module.compareNative$native = function(obj1, obj2) {
+		return obj1 == obj2;
+	}
+	
+	
+	module.setObjectPropertyNative = function(obj, name, val) {
+		obj[name] = val;
+	};
+	module.getObjectPropertyNative = function(obj, name) {
+		return obj[name];
+	};
+
+});
+
+
 window.interopMapNextId = 0; 
 window.interopMapCreate = function() {
 	return { 

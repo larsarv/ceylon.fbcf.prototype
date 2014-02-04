@@ -1,4 +1,4 @@
-import eu.arvidson.ceylon.fbcf.native { log }
+import eu.arvidson.ceylon.jsinterop.native { log }
 
 shared class SimpleEventHandler({Anything(TemplateInstanceEvent)*} handlers) {
 	shared void eventHandler(TemplateInstanceEvent event) {

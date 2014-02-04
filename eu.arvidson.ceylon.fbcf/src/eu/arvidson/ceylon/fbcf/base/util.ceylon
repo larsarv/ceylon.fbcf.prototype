@@ -1,4 +1,4 @@
-import eu.arvidson.ceylon.fbcf.native { log }
+import eu.arvidson.ceylon.jsinterop.native { log }
 
 shared void initializeAndAppendToBody(TemplateInstance(TemplateInstanceContext) instantiator) {
 	Integer start = system.milliseconds;

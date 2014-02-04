@@ -1,4 +1,4 @@
-import eu.arvidson.ceylon.fbcf.component { Component, Element, OptionalStringBinding, Value, OriginalElementModifier=ElementModifier }
+import eu.arvidson.ceylon.fbcf.base { Component, Element, OptionalStringBinding, Value, OriginalElementModifier=ElementModifier }
 
 shared interface HtmlFlow {}
 //shared interface HtmlHeadingContent satisfies HtmlFlow {}

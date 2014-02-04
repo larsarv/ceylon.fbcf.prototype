@@ -1,6 +1,5 @@
-import eu.arvidson.ceylon.fbcf.native { log, now }
-import eu.arvidson.ceylon.fbcf.component { RWValue, Repeat, Value, Template, Event, ShowIfExists, EventHandler, rwroot, Text, simpleRWValue, BindingLookup, EventHandlerRegistry, initializeAndAppendToBody, RegisterEventHandlerFunction, TemplateInstanceContext }
-import eu.arvidson.ceylon.fbcf.component.html5 { div, br, button, h1, h2, span, input, attrType, propValue }
+import eu.arvidson.ceylon.fbcf.base { RWValue, Repeat, Value, Template, Event, ShowIfExists, EventHandler, rwroot, Text, simpleRWValue, initializeAndAppendToBody, TemplateInstanceContext }
+import eu.arvidson.ceylon.fbcf.html5 { div, br, button, h1, h2, span, input, attrType, propValue }
 
 
 variable Integer nextTestDataItemId = 0;

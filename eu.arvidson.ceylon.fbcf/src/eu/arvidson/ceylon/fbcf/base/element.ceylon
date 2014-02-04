@@ -1,5 +1,5 @@
 import ceylon.language.meta { type }
-import eu.arvidson.ceylon.fbcf.native { setObjectProperty, log, getObjectProperty, now }
+import eu.arvidson.ceylon.jsinterop.native { setObjectProperty, log, getObjectProperty, now }
 
 
 shared interface ElementModifier<in Input> given Input satisfies Value {
