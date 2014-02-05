@@ -26,8 +26,9 @@ shared interface HtmlOption {}
 shared interface HtmlOptgroup {}
 shared interface HtmlSummary {}
 
-shared alias CommonContent<in Input,out Type> given Input satisfies Value => OriginalElementModifier<Input>|String|OptionalStringBinding<Input,Nothing>|Component<Input,Type|String>|Null;
+shared alias SimpleContent<in Input,out Type> given Input satisfies Value => String|OptionalStringBinding<Input,Nothing>|Component<Input,Type|String>|Null;
 shared alias ElementModifier<in Input> given Input satisfies Value => OriginalElementModifier<Input>|Null;
+shared alias CommonContent<in Input,out Type> given Input satisfies Value => SimpleContent<Input,Type>|ElementModifier<Input>;
 
 
 // 4.1
