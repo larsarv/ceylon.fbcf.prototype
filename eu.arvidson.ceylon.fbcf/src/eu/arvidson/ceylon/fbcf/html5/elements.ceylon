@@ -72,7 +72,7 @@ shared Component<Input,HtmlDt> dt<in Input>({CommonContent<Input,HtmlPhrasing>*}
 shared Component<Input,HtmlDd> dd<in Input>({CommonContent<Input,HtmlPhrasing>*} content = empty) given Input satisfies Value => Element<Input,HtmlDd>("dd", content);
 shared Component<Input,HtmlFlow> figure<in Input>({CommonContent<Input,HtmlFlow|HtmlFigcaption>*} content = empty) given Input satisfies Value => Element<Input,HtmlFlow>("figure", content);
 shared Component<Input,HtmlFigcaption> figcaption<in Input>({CommonContent<Input,HtmlFlow>*} content = empty) given Input satisfies Value => Element<Input,HtmlFigcaption>("figcaption", content);
-shared Component<Input,HtmlFlow> div<in Input>({CommonContent<Input,HtmlFlow>*} content = empty) given Input satisfies Value => Element<Input,HtmlFlow>("div", content);
+shared Component<Input,Type> div<in Input,Type=HtmlFlow>({CommonContent<Input,HtmlFlow>*} content = empty) given Input satisfies Value => Element<Input,Type>("div", content);
 shared Component<Input,HtmlFlow> main<in Input>({CommonContent<Input,HtmlFlow>*} content = empty) given Input satisfies Value => Element<Input,HtmlFlow>("main", content);
 // 4.6 Text-level semantics
 shared Component<Input,HtmlPhrasing> a<in Input>({CommonContent<Input,HtmlPhrasing>*} content = empty) given Input satisfies Value => Element<Input,HtmlPhrasing>("a", content);

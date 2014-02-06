@@ -72,17 +72,31 @@ class Theme() {
 				navbar {
 					type = navbarStandard;
 					fixedTop =  false;
-					header = "Project Name";
+					header = "Project name";
 					items = [*menuItems];
 				},			
 				navbar {
 					type = navbarInverse;
 					fixedTop =  false;
-					header = "Project Name";
+					header = "Project name";
 					items = [*menuItems];
 				},			
 				pageHeader("Alerts"),
+				alert(alertTypeSuccess, "Well done!", "You successfully read this important alert message."),
+				alert(alertTypeInfo, "Heads up!", "This alert needs your attention, but it's not super important."),
+				alert(alertTypeWarning, "Warning!", "Best check yo self, you're not looking too good."),
+				alert(alertTypeDanger, "Oh snap!", "Change a few things up and try submitting again."),
 				pageHeader("Progress bars"),
+				progress { progressBar(progressTypeStandard, 60, "60% Complete") },
+				progress { progressBar(progressTypeSuccess, 60, "40% Complete (success)") },
+				progress { progressBar(progressTypeInfo, 20, "20% Complete") },
+				progress { progressBar(progressTypeWarning, 60, "60% Complete (warning)") },
+				progress { progressBar(progressTypeDanger, 80, "80% Complete (danger)") },
+				progress {
+					progressBar(progressTypeSuccess, 35, "35% Complete (success)"),
+					progressBar(progressTypeWarning, 20, "20% Complete (warning)"),
+					progressBar(progressTypeDanger, 10, "10% Complete (danger)")					
+				},
 				pageHeader("List groups"),
 				pageHeader("Panels"),
 				pageHeader("Wells")

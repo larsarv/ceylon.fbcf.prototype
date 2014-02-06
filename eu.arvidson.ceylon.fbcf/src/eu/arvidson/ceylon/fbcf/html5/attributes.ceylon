@@ -35,6 +35,8 @@ shared Attribute<Input> attrCrossorigin<in Input>(AttributeValue<Input> val) giv
 shared Attribute<Input> attrRel<in Input>(AttributeValue<Input> val) given Input satisfies Value => Attribute("rel", val);
 
 shared Attribute<Input> attrRole<in Input>(AttributeValue<Input> val) given Input satisfies Value => Attribute("role", val);
+shared Attribute<Input> attrAria<in Input>(String name, AttributeValue<Input> val) given Input satisfies Value => Attribute("aria-" + name, val);
+
 // link, style, source
 shared Attribute<Input> attrMedia<in Input>(AttributeValue<Input> val) given Input satisfies Value => Attribute("media", val);
 // link, a, area

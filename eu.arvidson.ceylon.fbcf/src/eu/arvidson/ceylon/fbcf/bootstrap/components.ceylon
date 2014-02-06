@@ -1,4 +1,4 @@
-import eu.arvidson.ceylon.fbcf.html5 { nav, attrRole, HtmlFlow, attrClass, div, button_=button, attrType, attrData, span, a, b, attrHref, ul, li, HtmlLi, CommonContent, SimpleContent, h1, HtmlPhrasing, img, attrAlt }
+import eu.arvidson.ceylon.fbcf.html5 { nav, attrRole, HtmlFlow, attrClass, div, button_=button, attrType, attrData, span, a, b, attrHref, ul, li, HtmlLi, CommonContent, SimpleContent, h1, HtmlPhrasing, img, attrAlt, strong, attrStyle, attrAria }
 import eu.arvidson.ceylon.fbcf.base { Component, Value }
 
 shared abstract class NavbarType(shared String clazz) of navbarInverse|navbarStandard {}
@@ -90,4 +90,37 @@ shared Component<Input,HtmlFlow> dropdown<in Input>(String header, Component<Inp
 			*items
 		}
 	};
+}
+
+shared abstract class AlertType(shared String clazz) of alertTypeSuccess|alertTypeInfo|alertTypeWarning|alertTypeDanger {}
+shared object alertTypeSuccess extends AlertType("alert-success") {}
+shared object alertTypeInfo extends AlertType("alert-info") {}
+shared object alertTypeWarning extends AlertType("alert-warning") {}
+shared object alertTypeDanger extends AlertType("alert-danger") {}
+
+shared Component<Input,HtmlFlow> alert<in Input>(AlertType type, String? title, String message) given Input satisfies Value =>
+		div { attrClass("alert ``type.clazz``"), strong { title }, " ", message };
+
+shared abstract class ProgressType(shared String clazz) of progressTypeStandard|progressTypeSuccess|progressTypeInfo|progressTypeWarning|progressTypeDanger {}
+shared object progressTypeStandard extends ProgressType("") {}
+shared object progressTypeSuccess extends ProgressType("progress-bar-success") {}
+shared object progressTypeInfo extends ProgressType("progress-bar-info") {}
+shared object progressTypeWarning extends ProgressType("progress-bar-warning") {}
+shared object progressTypeDanger extends ProgressType("progress-bar-danger") {}
+
+shared interface ProgressBar satisfies HtmlFlow {}
+
+shared Component<Input,HtmlFlow> progress<in Input>({Component<Input, ProgressBar>*} bars) given Input satisfies Value =>
+		div<Input> ( bars.following(attrClass<Input>("progress")) ); // TODO FIX Once backend bug is fixed...
+
+shared Component<Input,ProgressBar> progressBar<in Input>(ProgressType type, Integer progress, String message) given Input satisfies Value {
+	return div<Input,ProgressBar> { 
+		attrClass("progress-bar ``type.clazz``"), 
+		attrRole("progressbar"), 
+		attrAria("valuenow", progress.string), 
+		attrAria("valuemin", "0"), 
+		attrAria("valuemax", "0"),
+		attrStyle("width: ``progress``%"),
+		span { attrClass("sr-only"), message } 
+ 	};
 }
