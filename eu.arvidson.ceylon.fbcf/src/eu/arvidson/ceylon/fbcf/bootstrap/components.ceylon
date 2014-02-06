@@ -1,17 +1,13 @@
-import eu.arvidson.ceylon.fbcf.html5 { nav, attrRole, HtmlFlow, attrClass, div, button_=button, attrType, attrData, span, a, b, attrHref, ul, li, HtmlLi, CommonContent, SimpleContent, h1, HtmlPhrasing }
+import eu.arvidson.ceylon.fbcf.html5 { nav, attrRole, HtmlFlow, attrClass, div, button_=button, attrType, attrData, span, a, b, attrHref, ul, li, HtmlLi, CommonContent, SimpleContent, h1, HtmlPhrasing, img, attrAlt }
 import eu.arvidson.ceylon.fbcf.base { Component, Value }
 
-String? valIfTrue(Boolean flag, String val) {
-	if (flag) {
-		return val;
-	} else {
-		return null;
-	}
-}
+shared abstract class NavbarType(shared String clazz) of navbarInverse|navbarStandard {}
+shared object navbarInverse extends NavbarType("navbar-inverse") {}
+shared object navbarStandard extends NavbarType("navbar-default") {}
 
-Component<Input,HtmlFlow> navbar<in Input>(String header, Component<Input,HtmlLi> *items) given Input satisfies Value {
+Component<Input,HtmlFlow> navbar<in Input>(NavbarType type, Boolean fixedTop, String header, Component<Input,HtmlLi> *items) given Input satisfies Value {
 	return nav<Input> {
-		attrClass("navbar navbar-inverse navbar-fixed-top"), 
+		attrClass("navbar ``type.clazz`` ``(fixedTop then "navbar-fixed-top" else "")``"), 
 		attrRole("navigation"),
 		div {
 			attrClass("container"),
@@ -40,10 +36,10 @@ Component<Input,HtmlFlow> navbar<in Input>(String header, Component<Input,HtmlLi
 	};
 }
 
-shared Component<Input,HtmlLi> navbarItem<in Input>(String href, String header, Boolean active = false) given Input satisfies Value => 
-		li<Input> { attrClass(valIfTrue(active, "active")), a { attrHref("#``href``"), header }};
+shared Component<Input,HtmlLi> menuItem<in Input>(String href, String header, Boolean active = false) given Input satisfies Value => 
+		li<Input> { active then attrClass("active") else null, a { attrHref("#``href``"), header }};
 
-shared Component<Input,HtmlLi> navbarDropdown<in Input>(String header, Component<Input,HtmlLi> *items) given Input satisfies Value {
+shared Component<Input,HtmlLi> menuDropdown<in Input>(String header, Component<Input,HtmlLi> *items) given Input satisfies Value {
 	return li<Input> { 
 		attrClass("nav navbar-nav"), 
 		a { attrHref("#"), attrClass("dropdown-toggle"), attrData("toggle", "dropdown"), header ," ", b { attrClass("caret") }},
@@ -53,9 +49,9 @@ shared Component<Input,HtmlLi> navbarDropdown<in Input>(String header, Component
 		}
 	};
 }
-shared Component<Input,HtmlLi> navbarDropdownDivider<in Input>() given Input satisfies Value => 
+shared Component<Input,HtmlLi> menuDropdownDivider<in Input>() given Input satisfies Value => 
 		li { attrClass("divider") };
-shared Component<Input,HtmlLi> navbarDropdownHeader<in Input>(String text) given Input satisfies Value => 
+shared Component<Input,HtmlLi> menuDropdownHeader<in Input>(String text) given Input satisfies Value => 
 		li { attrClass("dropdown-header"), text };
 
 shared Component<Input,HtmlFlow> jumbotron<in Input>(String title, SimpleContent<Input, HtmlFlow>* content) given Input satisfies Value => 
@@ -82,4 +78,16 @@ shared object buttonTypeLink extends ButtonType("btn-link") {}
 shared Component<Input,HtmlPhrasing> button<in Input>(String name, ButtonSize size, ButtonType type) given Input satisfies Value =>
 		button_ { attrType("button"), attrClass("btn ``size.clazz`` ``type.clazz``"), name };
 
+shared Component<Input,HtmlPhrasing> thumbnail<in Input>(String src, Integer width, Integer height, String description) given Input satisfies Value =>
+		img { attrData("src", "``src``/``width``x``height``"), attrClass("img-thumbnail"), attrAlt(description) };
 
+shared Component<Input,HtmlFlow> dropdown<in Input>(String header, Component<Input,HtmlLi> *items) given Input satisfies Value {
+	return div<Input> { 
+		attrClass("dropdown theme-dropdown clearfix"), 
+		a { attrHref("#"), attrClass("sr-only dropdown-toggle"), attrData("toggle", "dropdown"), header ," ", b { attrClass("caret") }},
+		ul {
+			attrClass("dropdown-menu"),
+			*items
+		}
+	};
+}
