@@ -118,7 +118,11 @@ class TextLinker<in Input>(node, Binding<Input,Value<Object?,Nothing>> binding) 
 		dynamic { 
 			controller = TextController(node);
 		}
-		observe(ctx.bind(input, binding), controller.update, ctx.registerEventHandler);
+		value val = ctx.bind(input, binding);
+		observe(val, controller.update, ctx.registerEventHandler);
+		// TODO Add "controller.update(val.get())" instead of handling initial value on initialize?
+		//controller.update(val.get());
+
 	}
 	shared actual Linker<Input> duplicate(TemplateDuplicationContext ctx, dynamic node) {
 		dynamic { 

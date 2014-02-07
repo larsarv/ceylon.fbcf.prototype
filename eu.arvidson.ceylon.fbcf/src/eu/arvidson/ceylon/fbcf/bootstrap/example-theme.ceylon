@@ -1,4 +1,4 @@
-import eu.arvidson.ceylon.fbcf.base { TemplateInstanceContext, simpleROValue, initializeAndAppendToBody, Value, Template, roroot, Fragment, Component }
+import eu.arvidson.ceylon.fbcf.base { TemplateInstanceContext, simpleROValue, initializeAndAppendToBody, Value, Template, roroot, Fragment, Component, const }
 import eu.arvidson.ceylon.fbcf.html5 { HtmlFlow, li, attrClass, div, attrRole, h1, p, a, attrHref, attrType, HtmlLi }
 class Theme() {
 	Component<Input,HtmlFlow> buttonExamples<in Input>(ButtonSize size) given Input satisfies Value {
@@ -87,11 +87,11 @@ class Theme() {
 				alert(alertTypeWarning, "Warning!", "Best check yo self, you're not looking too good."),
 				alert(alertTypeDanger, "Oh snap!", "Change a few things up and try submitting again."),
 				pageHeader("Progress bars"),
-				progress { progressBar(progressTypeStandard, 60, "60% Complete") },
-				progress { progressBar(progressTypeSuccess, 60, "40% Complete (success)") },
-				progress { progressBar(progressTypeInfo, 20, "20% Complete") },
-				progress { progressBar(progressTypeWarning, 60, "60% Complete (warning)") },
-				progress { progressBar(progressTypeDanger, 80, "80% Complete (danger)") },
+				simpleProgress(const(progressTypeStandard), const(60), const("60% Complete")),
+				simpleProgress(const(progressTypeSuccess), const(60), const("40% Complete (success)")),
+				simpleProgress(const(progressTypeInfo), const(20), const("20% Complete")),
+				simpleProgress(const(progressTypeWarning), const(60), const("60% Complete (warning)")),
+				simpleProgress(const(progressTypeDanger), const(80), const("80% Complete (danger)")),
 				progress {
 					progressBar(progressTypeSuccess, 35, "35% Complete (success)"),
 					progressBar(progressTypeWarning, 20, "20% Complete (warning)"),

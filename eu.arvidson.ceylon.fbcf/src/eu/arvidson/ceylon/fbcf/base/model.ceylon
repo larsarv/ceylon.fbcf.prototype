@@ -97,6 +97,7 @@ abstract class BaseValue<out GetType, in SetType>() satisfies Value<GetType, Set
 			}
 		}
 	}
+	// TODO Remove this and make sure observers get() initial value when they are created?
 	shared void handleInitializeEvent(TemplateInstanceEvent event) {
 		baseValueCounterInitialize += 1;
 		currentValue = get();
@@ -136,10 +137,13 @@ class ConstantValue<Get>(val) satisfies Value<Get,Nothing> {
 	variable Get val;
 	
 	shared actual Get get() => val;
-	shared actual Unsubscribe? observ(Anything(Get) observer) => null;
-	shared actual void set(Nothing newValue) {}
 
-	
+	// TODO Remove observer(val) and make sure observers get() initial value when they are created?
+	shared actual Unsubscribe? observ(Anything(Get) observer) {
+		observer(val);
+		return null;
+	}
+	shared actual void set(Nothing newValue) {}
 }
 
 class PassthroughBinding<Result>() satisfies Binding<Result,Result> given Result satisfies Value {
@@ -639,8 +643,8 @@ String? oldbuildStringList(Array<Boolean> flags, List<String> strings) {
 }
 
 
-String? buildStringFromList({String?*} strings) {
-	value result = " ".join(strings.coalesced);
+String? buildStringFromList(String separator, {String?*} strings) {
+	value result = separator.join(strings.coalesced);
 	if (result.empty) {
 		return null;
 	} else {
@@ -653,7 +657,7 @@ String? buildStringFromList({String?*} strings) {
 		if (exists str) {
 			if (first) {
 				first = false;
-				sb.append(" ");
+				sb.append(separator);
 			}
 			sb.append(str);
 		}
@@ -666,14 +670,15 @@ String? buildStringFromList({String?*} strings) {
 */
 }
 
-class StringListValue(strings) extends BaseValue<String?, Nothing>() {
+class StringsValue(separator, strings) extends BaseValue<String?, Nothing>() {
+	String separator;
 	Array<String?> strings;
 	
-	variable Uninitialized|String? val = buildStringFromList(strings);
+	variable Uninitialized|String? val = buildStringFromList(separator, strings);
 	
 	shared actual String? get() {
 		if (is Uninitialized tmp = val) {
-			val = buildStringFromList(strings);
+			val = buildStringFromList(separator, strings);
 		}
 		assert(is String? tmp = val);
 		return tmp;
@@ -687,7 +692,8 @@ class StringListValue(strings) extends BaseValue<String?, Nothing>() {
 	}
 }
 
-class StringListBinding<in Input>(args) satisfies Binding<Input,Value<String?,Nothing>> given Input satisfies Value {
+class StringsBinding<in Input>(separator, args) satisfies Binding<Input,Value<String?,Nothing>> given Input satisfies Value {
+	String separator;
 	{Binding<Input,Value<String?,Nothing>>*} args;
 	
 	shared actual Value<String?,Nothing> bind(BindingContext ctx, Input input) {
@@ -699,7 +705,7 @@ class StringListBinding<in Input>(args) satisfies Binding<Input,Value<String?,No
 			values.append(val);
 		}
 		
-		value result = StringListValue(Array(values.sequence.map((Value<String?,Nothing> elem) => elem.get())));
+		value result = StringsValue(separator, Array(values.sequence.map((Value<String?,Nothing> elem) => elem.get())));
 		
 		variable Integer index = 0;
 		for (val in values.sequence) {
@@ -710,8 +716,30 @@ class StringListBinding<in Input>(args) satisfies Binding<Input,Value<String?,No
 		return result;
 	}
 }
-shared Binding<Input,Value<String?,Nothing>> stringList<in Input>({Binding<Input,Value<String?,Nothing>>*} args) given Input satisfies Value {
-	return StringListBinding(args);
+shared Binding<Input,Value<String?,Nothing>> stringList<in Input>({Binding<Input,Value<String?,Nothing>>|String*} args) given Input satisfies Value {
+	value tmp = args.map((Binding<Input,Value<String?,Nothing>>|String elem) {
+		switch (elem)
+		case (is String) {
+			return const(elem);
+		}
+		case (is Binding<Input,Value<String?,Nothing>>) {
+			return elem;
+		}
+	});
+	return StringsBinding(" ", tmp);
+}
+
+shared Binding<Input,Value<String?,Nothing>> string<in Input>({Binding<Input,Value<String?,Nothing>>|String*} args) given Input satisfies Value {
+	value tmp = args.map((Binding<Input,Value<String?,Nothing>>|String elem) {
+		switch (elem)
+		case (is String) {
+			return const(elem);
+		}
+		case (is Binding<Input,Value<String?,Nothing>>) {
+			return elem;
+		}
+	});
+	return StringsBinding("", tmp);
 }
 
 class ConditionalValue<GetType,SetType>(condition, thenResult, thenSetter, elseResult, elseSetter) extends BaseValue<GetType, SetType>() {
@@ -771,8 +799,10 @@ shared Binding<Input, Value<ResultGetType, ResultSetType>> conditional<in Input,
 
 
 
+shared BindingBuilder<InputGet,InputSet,CurrentGet,CurrentSet> builder<InputGet,InputSet,CurrentGet,CurrentSet>(Binding<Value<InputGet,InputSet>,Value<CurrentGet,CurrentSet>> binding) 
+	=> BindingBuilder(binding);
 
-shared class BindingBuilder<InputGet, InputSet,CurrentGet,CurrentSet>(binding) {
+shared class BindingBuilder<InputGet,InputSet,CurrentGet,CurrentSet>(binding) {
 	shared default Binding<Value<InputGet,InputSet>,Value<CurrentGet,CurrentSet>> binding;
 
 	shared BindingBuilder<InputGet,InputSet,ResultGet,ResultSet> chain<ResultGet,ResultSet>(Binding<Value<CurrentGet,CurrentSet>,Value<ResultGet,ResultSet>> target) => BindingBuilder(ChainedBinding(binding, target));
@@ -814,17 +844,9 @@ shared RootBindingBuilder<Type,Type,Type,Type> rwroot<Type>() {
 	return RootBindingBuilder(RootBinding<Value<Type,Type>>());
 }
 
-class ConstValue<out Type>(Type const) satisfies Value<Type, Nothing> {
-	shared actual Type get() => const;
-	
-	shared actual Unsubscribe? observ(Anything(Type) observer) => null;
-	
-	shared actual void set(Nothing newValue) {}
-}
-
 class ConstBinding<in Input,out Type>(Type const) satisfies Binding<Input, Value<Type,Nothing>> given Input satisfies Value {
 
-	shared actual Value<Type,Nothing> bind(BindingContext ctx, Input input) => ConstValue(const);
+	shared actual Value<Type,Nothing> bind(BindingContext ctx, Input input) => ConstantValue(const);
 	
 
 }
