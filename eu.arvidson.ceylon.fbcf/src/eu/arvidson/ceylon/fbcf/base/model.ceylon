@@ -1,4 +1,4 @@
-import ceylon.language.meta.model { Attribute, CeylonValue=Value, Method, Function }
+import ceylon.language.meta.model { Attribute, CeylonValue=Value, Method, Function, ClassOrInterface }
 import ceylon.collection { LinkedList }
 import eu.arvidson.ceylon.jsinterop.native { log, now }
 import eu.arvidson.ceylon.jsinterop { JsMapWrapper }
@@ -29,6 +29,21 @@ shared interface BindingContext {
 shared interface Binding<in Input,out Result> given Input satisfies Value given Result satisfies Value {
 	shared formal Result bind(BindingContext ctx, Input input);
 }
+shared alias ReadBinding<Input,Type> given Input satisfies Value => Binding<Input, Value<Type,Nothing>>;
+
+shared alias ConstantOrBinding<Input,Type> given Input satisfies Value => Type|Binding<Input, Value<Type,Nothing>>;
+
+shared  class ToBinding<TypeArg>() {
+	shared Binding<Input,Value<Type,Nothing>> from<Input,Type>(TypeArg|Binding<Input,Value<Type,Nothing>> arg) given Input satisfies Value given Type satisfies TypeArg {
+		if (is Binding<Input, Value<Type,Nothing>> arg) {
+			return arg;
+		}
+		assert(is Type arg);
+		return const(arg);
+	}
+}
+
+shared ToBinding<TypeArg> toBinding<TypeArg>() => ToBinding<TypeArg>();
 
 shared void observe<in Model>(Value<Model,Nothing> val, Anything(Model) observer, RegisterEventHandlerFunction registerEventHandler) {
 	value unsub = val.observ(observer);
@@ -799,8 +814,8 @@ shared Binding<Input, Value<ResultGetType, ResultSetType>> conditional<in Input,
 
 
 
-shared BindingBuilder<InputGet,InputSet,CurrentGet,CurrentSet> builder<InputGet,InputSet,CurrentGet,CurrentSet>(Binding<Value<InputGet,InputSet>,Value<CurrentGet,CurrentSet>> binding) 
-	=> BindingBuilder(binding);
+shared BindingBuilder<InputGet,InputSet,CurrentGet,CurrentSet> builder<InputGet,InputSet,CurrentGet,CurrentSet>(Binding<Value<InputGet,InputSet>,Value<CurrentGet,CurrentSet>> binding)
+		=> BindingBuilder(binding);
 
 shared class BindingBuilder<InputGet,InputSet,CurrentGet,CurrentSet>(binding) {
 	shared default Binding<Value<InputGet,InputSet>,Value<CurrentGet,CurrentSet>> binding;
@@ -834,8 +849,13 @@ shared class RootBindingBuilder<InputGet,InputSet,CurrentGet,CurrentSet>(binding
 	shared OutputBindingBuilder<InputGet,InputSet,Type,Type> rwroot<Type>() => OutputBindingBuilder(OutputBinding<Value<InputGet,InputSet>, Value<Type,Type>>());
 	shared OutputBindingBuilder<InputGet,InputSet,Type,Nothing> roroot<Type>() => OutputBindingBuilder(OutputBinding<Value<InputGet,InputSet>, Value<Type,Nothing>>());
 	shared BindingBuilder<InputGet,InputSet,Anything(),Nothing> nop() => BindingBuilder(NopBinding<Value<InputGet, InputSet>>());
+
+	shared BindingBuilder<InputGet,InputSet,Type,Nothing> builder<Type>(ConstantOrBinding<Value<InputGet,InputSet>, Type> arg) => nothing;
 }
 
+shared RootBindingBuilder<InputGet,InputSet,InputGet,InputSet> root<InputGet,InputSet>() {
+	return RootBindingBuilder(RootBinding<Value<InputGet,InputSet>>());
+}
 
 shared RootBindingBuilder<Type,Nothing,Type,Nothing> roroot<Type>() {
 	return RootBindingBuilder(RootBinding<Value<Type,Nothing>>());

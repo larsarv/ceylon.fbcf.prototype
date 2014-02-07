@@ -1,5 +1,5 @@
-import eu.arvidson.ceylon.fbcf.html5 { nav, attrRole, HtmlFlow, attrClass, div, button_=button, attrType, attrData, span, a, b, attrHref, ul, li, HtmlLi, CommonContent, SimpleContent, h1, HtmlPhrasing, img, attrAlt, strong, attrStyle, attrAria }
-import eu.arvidson.ceylon.fbcf.base { Component, Value, Binding, stringList, BindingBuilder, const, builder, string }
+import eu.arvidson.ceylon.fbcf.html5 { nav, attrRole, HtmlFlow, attrClass, div, button_=button, attrType, attrData, span, a, b, attrHref, ul, li, HtmlLi, SimpleContent, h1, HtmlPhrasing, img, attrAlt, strong, attrStyle, attrAria }
+import eu.arvidson.ceylon.fbcf.base { Component, Value, stringList, builder, string, ConstantOrBinding, toBinding, root }
 
 shared abstract class NavbarType(shared String clazz) of navbarInverse|navbarStandard {}
 shared object navbarInverse extends NavbarType("navbar-inverse") {}
@@ -110,9 +110,6 @@ shared object progressTypeDanger extends ProgressType("progress-bar-danger") {}
 
 shared interface ProgressBar satisfies HtmlFlow {}
 
-shared alias ConstantOrBinding<in Input, out Type> given Input satisfies Value => Type|Binding<Input, Value<Type,Nothing>>;
-shared alias ReadBinding<in Input, out Type> given Input satisfies Value => Binding<Input, Value<Type,Nothing>>;
-
 String toProgressString(Integer val) {
 	if (val < 0) {
 		return "0";
@@ -122,16 +119,20 @@ String toProgressString(Integer val) {
 		return val.string;
 	}
 }
-shared Component<Value<InputGet, InputSet>,HtmlFlow> simpleProgress<InputGet, InputSet>(Binding<Value<InputGet, InputSet>,Value<ProgressType,Nothing>> type, ReadBinding<Value<InputGet, InputSet>,Integer> progress, ReadBinding<Value<InputGet, InputSet>,String> message) {
+shared Component<Value<InputGet, InputSet>,HtmlFlow> simpleProgress<in InputGet,out InputSet>(ConstantOrBinding<Value<InputGet, InputSet>,ProgressType> type, ConstantOrBinding<Value<InputGet, InputSet>,Integer> progress, ConstantOrBinding<Value<InputGet, InputSet>,String> message) {
+//	value progressBinding = builder(toBinding<Integer>().from(progress)).fun(toProgressString).binding;
+	value input = root<InputGet, InputSet>();
+	value progressBinding = input.builder<Integer>(progress).fun(toProgressString).binding;
+	value test = input.builder<ProgressType>(type);
 	return div<Value<InputGet, InputSet>> {
 		attrClass("progress"),
 		div<Value<InputGet, InputSet>,ProgressBar> { 
-			attrClass(stringList { "progress-bar", builder(type).attr(`ProgressType.clazz`).binding }), 
+			attrClass(stringList { "progress-bar", builder(toBinding<ProgressType>().from(type)).attr(`ProgressType.clazz`).binding }), 
 			attrRole("progressbar"), 
-			attrAria("valuenow", builder(progress).attr(`Integer.string`).binding), 
+			attrAria("valuenow", progressBinding), 
 			attrAria("valuemin", "0"), 
 			attrAria("valuemax", "0"),
-			attrStyle(string { "width: ", builder(progress).fun(toProgressString).binding, "%" }),
+			attrStyle(string { "width: ", progressBinding, "%" }),
 			span { attrClass("sr-only"), message } 
 		}
 	};
