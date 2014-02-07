@@ -611,7 +611,7 @@ class NopBinding<in Input>() satisfies Binding<Input, Value<Anything(), Nothing>
 	shared actual Value<Anything(),Nothing> bind(BindingContext ctx, Input input) => NopValue();
 }
 
-String? buildStringList(Array<Boolean> flags, List<String> strings) {
+String? oldbuildStringList(Array<Boolean> flags, List<String> strings) {
 	value sb = StringBuilder();
 	variable Integer i = 0;
 	for (str in strings) {
@@ -638,72 +638,139 @@ String? buildStringList(Array<Boolean> flags, List<String> strings) {
 */
 }
 
-class StringListValue(flags, strings) extends BaseValue<String?, Nothing>() {
-	List<String> strings;
-	Array<Boolean> flags;
 
-	variable Uninitialized|String? val = buildStringList(flags, strings);
+String? buildStringFromList({String?*} strings) {
+	value result = " ".join(strings.coalesced);
+	if (result.empty) {
+		return null;
+	} else {
+		return result;
+	}
+/*
+	variable Boolean first = true;
+	value sb = StringBuilder();
+	for (str in strings) {
+		if (exists str) {
+			if (first) {
+				first = false;
+				sb.append(" ");
+			}
+			sb.append(str);
+		}
+	}
+	if (first) {
+		return null;
+	} else {
+		return sb.string;
+	}
+*/
+}
 
+class StringListValue(strings) extends BaseValue<String?, Nothing>() {
+	Array<String?> strings;
+	
+	variable Uninitialized|String? val = buildStringFromList(strings);
+	
 	shared actual String? get() {
 		if (is Uninitialized tmp = val) {
-			val = buildStringList(flags, strings);
+			val = buildStringFromList(strings);
 		}
 		assert(is String? tmp = val);
 		return tmp;
 	}
 	
 	shared actual void set(Nothing newValue) {}
-
-	shared void update(Integer index)(Boolean tmp) {
+	
+	shared void update(Integer index)(String? tmp) {
 		val = uninitialized;
-		flags.set(index, tmp);
+		strings.set(index, tmp);
 	}
 }
 
 class StringListBinding<in Input>(args) satisfies Binding<Input,Value<String?,Nothing>> given Input satisfies Value {
-	{[Binding<Input,Value<Boolean,Nothing>>,String]+} args;
-
+	{Binding<Input,Value<String?,Nothing>>*} args;
+	
 	shared actual Value<String?,Nothing> bind(BindingContext ctx, Input input) {
-		value values = SequenceBuilder<Value<Boolean,Nothing>>();
-		value flags = SequenceBuilder<Boolean>();
-		value strings = SequenceBuilder<String>();
+		value values = SequenceBuilder<Value<String?,Nothing>>();
 		value unsubs =  SequenceBuilder<Anything()?>();
-
+		
 		for (arg in args) {
-			value val = arg[0].bind(ctx, input); 
+			value val = arg.bind(ctx, input); 
 			values.append(val);
-			flags.append(val.get());
-			strings.append(arg[1]);
 		}
-
-		value result = StringListValue(Array(flags.sequence), strings.sequence);
-
+		
+		value result = StringListValue(Array(values.sequence.map((Value<String?,Nothing> elem) => elem.get())));
+		
 		variable Integer index = 0;
 		for (val in values.sequence) {
 			unsubs.append(val.observ(result.update(index++)));
 		}
-
-		result.init(ctx.registerEventHandler, false, *unsubs.sequence);
-		return result;
-	}
-/* This implementation do not perform very well atm...
-	shared actual Value<String?,Nothing> bind(BindingContext ctx, Input input) {
-		value values = args.map(([Binding<Input,Value<Boolean,Nothing>>, String] elem) => elem[0].bind(ctx, input));
-		value flags = Array(values.map((Value<Boolean,Nothing> elem) => elem.get()));
-		value strings = Array(args.map(([Binding<Input,Value<Boolean,Nothing>>, String] elem) => elem[1]));
-		value result = StringListValue(flags, strings);
-		
-		value unsubs = values.indexed.collect((Integer->Value<Boolean,Nothing> element) => element.item.observ(result.update(element.key)));
 		
 		result.init(ctx.registerEventHandler, false, *unsubs.sequence);
 		return result;
 	}
-*/
 }
-
-shared Binding<Input,Value<String?,Nothing>> stringList<in Input>({[Binding<Input,Value<Boolean,Nothing>>,String]+} args) given Input satisfies Value {
+shared Binding<Input,Value<String?,Nothing>> stringList<in Input>({Binding<Input,Value<String?,Nothing>>*} args) given Input satisfies Value {
 	return StringListBinding(args);
 }
+
+class ConditionalValue<GetType,SetType>(condition, thenResult, thenSetter, elseResult, elseSetter) extends BaseValue<GetType, SetType>() {
+	variable Boolean condition;
+	variable GetType thenResult;
+	variable GetType elseResult;
+	
+	void thenSetter(SetType val);
+	void elseSetter(SetType val);
+	
+	shared actual GetType get() {
+		if (condition) {
+			return thenResult;
+		} else  {
+			return elseResult;
+		}
+	}
+	
+	shared actual void set(SetType newValue) {
+		if (condition) {
+			thenSetter(newValue);
+		} else  {
+			elseSetter(newValue);
+		}
+		
+	}
+	
+	shared void updateCondition(Boolean val) {
+		condition = val;
+	}
+	shared void updateThen(GetType val) {
+		thenResult = val;
+	}
+	shared void updateElse(GetType val) {
+		elseResult = val;
+	}
+}
+
+class ConditionalBinding<in Input, out ResultGetType, in ResultSetType>(condition, thenResult, elseResult) satisfies Binding<Input,Value<ResultGetType,ResultSetType>> given Input satisfies Value {
+	Binding<Input,Value<Boolean,Nothing>> condition;
+	Binding<Input,Value<ResultGetType,ResultSetType>> thenResult;
+	Binding<Input,Value<ResultGetType,ResultSetType>> elseResult;
+
+	shared actual Value<ResultGetType,ResultSetType> bind(BindingContext ctx, Input input) {
+		value condValue = condition.bind(ctx, input);
+		value thenValue = thenResult.bind(ctx, input);
+		value elseValue = elseResult.bind(ctx, input);
+
+		ConditionalValue<ResultGetType,ResultSetType> result = ConditionalValue(condValue.get(), thenValue.get(), thenValue.set, elseValue.get(), elseValue.set);
+		result.init(ctx.registerEventHandler, false, condValue.observ(result.updateCondition), thenValue.observ(result.updateThen), elseValue.observ(result.updateElse));
+		return result;
+	}
+}
+
+shared Binding<Input, Value<ResultGetType, ResultSetType>> conditional<in Input, out ResultGetType, in ResultSetType>(Binding<Input,Value<Boolean,Nothing>> condition, Binding<Input,Value<ResultGetType,ResultSetType>> thenResult, Binding<Input,Value<ResultGetType,ResultSetType>> elseResult) given Input satisfies Value 
+	=> ConditionalBinding(condition, thenResult, elseResult);
+
+
+
 
 shared class BindingBuilder<InputGet, InputSet,CurrentGet,CurrentSet>(binding) {
 	shared default Binding<Value<InputGet,InputSet>,Value<CurrentGet,CurrentSet>> binding;
@@ -747,4 +814,18 @@ shared RootBindingBuilder<Type,Type,Type,Type> rwroot<Type>() {
 	return RootBindingBuilder(RootBinding<Value<Type,Type>>());
 }
 
+class ConstValue<out Type>(Type const) satisfies Value<Type, Nothing> {
+	shared actual Type get() => const;
+	
+	shared actual Unsubscribe? observ(Anything(Type) observer) => null;
+	
+	shared actual void set(Nothing newValue) {}
+}
 
+class ConstBinding<in Input,out Type>(Type const) satisfies Binding<Input, Value<Type,Nothing>> given Input satisfies Value {
+
+	shared actual Value<Type,Nothing> bind(BindingContext ctx, Input input) => ConstValue(const);
+	
+
+}
+shared Binding<Input, Value<Type,Nothing>> const<in Input, out Type>(Type const) given Input satisfies Value => ConstBinding(const);

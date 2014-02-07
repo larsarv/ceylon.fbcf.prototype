@@ -1,4 +1,4 @@
-import eu.arvidson.ceylon.fbcf.base { simpleROValue, Template, Fragment, roroot, Text, Repeat, Value, noargs, stringList, initializeAndAppendToBody, Tuple1, TemplateInstanceContext }
+import eu.arvidson.ceylon.fbcf.base { simpleROValue, Template, Fragment, roroot, Text, Repeat, Value, noargs, stringList, initializeAndAppendToBody, Tuple1, TemplateInstanceContext, conditional, const }
 import eu.arvidson.ceylon.fbcf.html5 { section, header, h1, input, ul, label, footer, span, strong, p, a, div, button, li, attrId, attrType, attrFor, attrHref, attrClass, attrStyle, attrPlaceholder, onClick, onDblClick, propValue, onEnter, propChecked, doFocus, onBlur, HtmlFlow }
 
 
@@ -128,8 +128,8 @@ shared class TodoMvc() {
 							output = item.binding;
 							li {
 								attrClass(stringList {
-									[itemDone.binding, "completed"],
-									[itemEdit.binding, "editing"]
+									conditional(itemDone.binding, const("completed"), const(null)),
+									conditional(itemEdit.binding, const("editing"), const(null))
 								}),
 								//itemDone.conditional(true, "completed", null).binding,
 								div { 
