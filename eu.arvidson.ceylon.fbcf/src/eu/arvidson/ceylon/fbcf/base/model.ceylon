@@ -1,4 +1,4 @@
-import ceylon.language.meta.model { Attribute, CeylonValue=Value, Method, Function, ClassOrInterface }
+import ceylon.language.meta.model { Attribute, CeylonValue=Value, Method, Function }
 import ceylon.collection { LinkedList }
 import eu.arvidson.ceylon.jsinterop.native { log, now }
 import eu.arvidson.ceylon.jsinterop { JsMapWrapper }
@@ -29,9 +29,9 @@ shared interface BindingContext {
 shared interface Binding<in Input,out Result> given Input satisfies Value given Result satisfies Value {
 	shared formal Result bind(BindingContext ctx, Input input);
 }
-shared alias ReadBinding<Input,Type> given Input satisfies Value => Binding<Input, Value<Type,Nothing>>;
+shared alias ReadOnlyBinding<Input,Type> given Input satisfies Value => Binding<Input, Value<Type,Nothing>>;
 
-shared alias ConstantOrBinding<Input,Type> given Input satisfies Value => Type|Binding<Input, Value<Type,Nothing>>;
+shared alias ConstantOrBinding<Input,Type> given Input satisfies Value => Type|ReadOnlyBinding<Input, Type>;
 
 shared void observe<in Model>(Value<Model,Nothing> val, Anything(Model) observer, RegisterEventHandlerFunction registerEventHandler) {
 	value unsub = val.observ(observer);
