@@ -33,18 +33,6 @@ shared alias ReadBinding<Input,Type> given Input satisfies Value => Binding<Inpu
 
 shared alias ConstantOrBinding<Input,Type> given Input satisfies Value => Type|Binding<Input, Value<Type,Nothing>>;
 
-shared  class ToBinding<TypeArg>() {
-	shared Binding<Input,Value<Type,Nothing>> from<Input,Type>(TypeArg|Binding<Input,Value<Type,Nothing>> arg) given Input satisfies Value given Type satisfies TypeArg {
-		if (is Binding<Input, Value<Type,Nothing>> arg) {
-			return arg;
-		}
-		assert(is Type arg);
-		return const(arg);
-	}
-}
-
-shared ToBinding<TypeArg> toBinding<TypeArg>() => ToBinding<TypeArg>();
-
 shared void observe<in Model>(Value<Model,Nothing> val, Anything(Model) observer, RegisterEventHandlerFunction registerEventHandler) {
 	value unsub = val.observ(observer);
 	if (exists unsub) {
@@ -813,10 +801,6 @@ shared Binding<Input, Value<ResultGetType, ResultSetType>> conditional<in Input,
 	=> ConditionalBinding(condition, thenResult, elseResult);
 
 
-
-shared BindingBuilder<InputGet,InputSet,CurrentGet,CurrentSet> builder<InputGet,InputSet,CurrentGet,CurrentSet>(Binding<Value<InputGet,InputSet>,Value<CurrentGet,CurrentSet>> binding)
-		=> BindingBuilder(binding);
-
 shared class BindingBuilder<InputGet,InputSet,CurrentGet,CurrentSet>(binding) {
 	shared default Binding<Value<InputGet,InputSet>,Value<CurrentGet,CurrentSet>> binding;
 
@@ -850,10 +834,20 @@ shared class RootBindingBuilder<InputGet,InputSet,CurrentGet,CurrentSet>(binding
 	shared OutputBindingBuilder<InputGet,InputSet,Type,Nothing> roroot<Type>() => OutputBindingBuilder(OutputBinding<Value<InputGet,InputSet>, Value<Type,Nothing>>());
 	shared BindingBuilder<InputGet,InputSet,Anything(),Nothing> nop() => BindingBuilder(NopBinding<Value<InputGet, InputSet>>());
 
-	shared BindingBuilder<InputGet,InputSet,Type,Nothing> builder<Type>(ConstantOrBinding<Value<InputGet,InputSet>, Type> arg) => nothing;
+	// TODO FIX??? Better name for next method??
+	shared BindingBuilder<InputGet,InputSet,Type,Nothing> constOrBinding<Type>(ConstantOrBinding<Value<InputGet,InputSet>, Type> arg) {
+		if (is Binding<Value<InputGet,InputSet>,Value<Type,Nothing>> arg) {
+			return BindingBuilder(arg);
+		}
+		assert(is Type arg);
+		return BindingBuilder(const<Value<InputGet,InputSet>,Type>(arg));
+	}
 }
 
-shared RootBindingBuilder<InputGet,InputSet,InputGet,InputSet> root<InputGet,InputSet>() {
+shared BindingBuilder<InputGet,InputSet,CurrentGet,CurrentSet> builder<InputGet,InputSet,CurrentGet,CurrentSet>(Binding<Value<InputGet,InputSet>,Value<CurrentGet,CurrentSet>> binding)
+		=> BindingBuilder(binding);
+
+shared RootBindingBuilder<InputGet,InputSet,InputGet,InputSet> rootBuilder<InputGet,InputSet>() {
 	return RootBindingBuilder(RootBinding<Value<InputGet,InputSet>>());
 }
 

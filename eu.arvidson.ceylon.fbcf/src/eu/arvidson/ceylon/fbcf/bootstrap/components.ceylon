@@ -1,5 +1,5 @@
 import eu.arvidson.ceylon.fbcf.html5 { nav, attrRole, HtmlFlow, attrClass, div, button_=button, attrType, attrData, span, a, b, attrHref, ul, li, HtmlLi, SimpleContent, h1, HtmlPhrasing, img, attrAlt, strong, attrStyle, attrAria }
-import eu.arvidson.ceylon.fbcf.base { Component, Value, stringList, builder, string, ConstantOrBinding, toBinding, root }
+import eu.arvidson.ceylon.fbcf.base { Component, Value, stringList, string, ConstantOrBinding, rootBuilder }
 
 shared abstract class NavbarType(shared String clazz) of navbarInverse|navbarStandard {}
 shared object navbarInverse extends NavbarType("navbar-inverse") {}
@@ -120,14 +120,13 @@ String toProgressString(Integer val) {
 	}
 }
 shared Component<Value<InputGet, InputSet>,HtmlFlow> simpleProgress<in InputGet,out InputSet>(ConstantOrBinding<Value<InputGet, InputSet>,ProgressType> type, ConstantOrBinding<Value<InputGet, InputSet>,Integer> progress, ConstantOrBinding<Value<InputGet, InputSet>,String> message) {
-//	value progressBinding = builder(toBinding<Integer>().from(progress)).fun(toProgressString).binding;
-	value input = root<InputGet, InputSet>();
-	value progressBinding = input.builder<Integer>(progress).fun(toProgressString).binding;
-	value test = input.builder<ProgressType>(type);
-	return div<Value<InputGet, InputSet>> {
+	value builder = rootBuilder<InputGet, InputSet>();
+	value progressBinding = builder.constOrBinding<Integer>(progress).fun(toProgressString).binding;
+
+	return div {
 		attrClass("progress"),
-		div<Value<InputGet, InputSet>,ProgressBar> { 
-			attrClass(stringList { "progress-bar", builder(toBinding<ProgressType>().from(type)).attr(`ProgressType.clazz`).binding }), 
+		div {
+			attrClass(stringList { "progress-bar", builder.constOrBinding<ProgressType>(type).attr(`ProgressType.clazz`).binding }), 
 			attrRole("progressbar"), 
 			attrAria("valuenow", progressBinding), 
 			attrAria("valuemin", "0"), 
