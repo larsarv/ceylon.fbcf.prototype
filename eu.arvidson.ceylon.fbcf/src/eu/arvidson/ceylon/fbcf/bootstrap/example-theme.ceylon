@@ -88,7 +88,6 @@ class Theme() {
 				alert(alertTypeDanger, "Oh snap!", "Change a few things up and try submitting again."),
 				pageHeader("Progress bars"),
 				simpleProgress(progressTypeStandard, 60, "60% Complete"),
-				simpleProgress(progressTypeStandard, 60, "60% Complete"),
 				simpleProgress(progressTypeSuccess, 40, "40% Complete (success)"),
 				simpleProgress(progressTypeInfo, 20, "20% Complete"),
 				simpleProgress(progressTypeWarning, 60, "60% Complete (warning)"),
