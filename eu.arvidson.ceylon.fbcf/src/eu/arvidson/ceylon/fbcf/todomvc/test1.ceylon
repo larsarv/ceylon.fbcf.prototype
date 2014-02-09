@@ -40,8 +40,8 @@ void reset(RWValue<TestData> val) {
 
 Template<Value<TestData?,TestData?>,Anything> buildTemplate() {
 	value optModel = rwroot<TestData?>();
-	value appModel = optModel.rwroot<TestData>();
-	value item = optModel.roroot<TestDataItem>();
+	value appModel = optModel.outputReadWrite<TestData>();
+	value item = optModel.outputReadOnly<TestDataItem>();
 	
 	value component = div {
 		button { "Toggle", EventHandler(optModel.binding, "click", (RWValue<TestData?> data, Event even) => toggle(data)) },

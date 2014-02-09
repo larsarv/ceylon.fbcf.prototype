@@ -104,7 +104,7 @@ shared Component<Value<InputGet, InputSet>,HtmlFlow> alert<in InputGet,out Input
 	ConstantOrBinding<Value<InputGet, InputSet>, String> message;
 
 	value builder = rootBuilder<InputGet, InputSet>();
-	value titleBinding = builder.roroot<String>().binding;
+	value titleBinding = builder.outputReadOnly<String>().binding;
 
 	return div { 
 		attrClass("alert ``type.clazz``"), 

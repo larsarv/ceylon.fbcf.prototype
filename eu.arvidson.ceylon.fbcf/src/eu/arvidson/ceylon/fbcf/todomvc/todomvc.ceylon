@@ -91,7 +91,7 @@ shared class TodoList() {
 shared class TodoMvc() {
 	Template<Value<TodoList, Nothing>,HtmlFlow> buildTemplate() {
 		value app = roroot<TodoList>();
-		value item = app.roroot<TodoItem>();
+		value item = app.outputReadOnly<TodoItem>();
 		value filter = app.attr(`TodoList.filter`);
 		value completedCount = app.method(`TodoList.completedCount`);
 		value itemDone = item.attr(`TodoItem.done`);

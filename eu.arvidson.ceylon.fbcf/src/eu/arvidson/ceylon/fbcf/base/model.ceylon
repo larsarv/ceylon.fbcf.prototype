@@ -830,8 +830,8 @@ shared class OutputBindingBuilder<InputGet,InputSet,CurrentGet,CurrentSet>(bindi
 shared class RootBindingBuilder<InputGet,InputSet,CurrentGet,CurrentSet>(binding) extends BindingBuilder<InputGet,InputSet,CurrentGet,CurrentSet>(binding) {
 	Binding<Value<InputGet,InputSet>,Value<CurrentGet,CurrentSet>> binding;
 
-	shared OutputBindingBuilder<InputGet,InputSet,Type,Type> rwroot<Type>() => OutputBindingBuilder(OutputBinding<Value<InputGet,InputSet>, Value<Type,Type>>());
-	shared OutputBindingBuilder<InputGet,InputSet,Type,Nothing> roroot<Type>() => OutputBindingBuilder(OutputBinding<Value<InputGet,InputSet>, Value<Type,Nothing>>());
+	shared OutputBindingBuilder<InputGet,InputSet,Type,Type> outputReadWrite<Type>() => OutputBindingBuilder(OutputBinding<Value<InputGet,InputSet>, Value<Type,Type>>());
+	shared OutputBindingBuilder<InputGet,InputSet,Type,Nothing> outputReadOnly<Type>() => OutputBindingBuilder(OutputBinding<Value<InputGet,InputSet>, Value<Type,Nothing>>());
 	shared BindingBuilder<InputGet,InputSet,Anything(),Nothing> nop() => BindingBuilder(NopBinding<Value<InputGet, InputSet>>());
 
 	// TODO FIX??? Better name for next method??
