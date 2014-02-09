@@ -1,4 +1,4 @@
-import eu.arvidson.ceylon.fbcf.base { simpleROValue, Template, Fragment, roroot, Text, Repeat, Value, noargs, stringList, initializeAndAppendToBody, Tuple1, TemplateInstanceContext, conditional, const }
+import eu.arvidson.ceylon.fbcf.base { simpleROValue, Template, Fragment, roroot, Text, Repeat, Value, noargs, stringList, initializeAndAppendToBody, Tuple1, TemplateInstanceContext, conditional, const, ShowIfTrue }
 import eu.arvidson.ceylon.fbcf.html5 { section, header, h1, input, ul, label, footer, span, strong, p, a, div, button, li, attrId, attrType, attrFor, attrHref, attrClass, attrStyle, attrPlaceholder, onClick, onDblClick, propValue, onEnter, propChecked, doFocus, onBlur, HtmlFlow }
 
 
@@ -16,8 +16,8 @@ shared class TodoItem(description) {
 
 shared class TodoList() {
 	shared variable String? newTodo = null;
-	//shared variable { TodoItem *} items = [ for (i in 1..500) TodoItem("Item ``i``") ].sequence;
-	shared variable { TodoItem *} items = empty;
+	shared variable { TodoItem *} items = [ for (i in 1..500) TodoItem("Item ``i``") ].sequence;
+	//shared variable { TodoItem *} items = empty;
 	shared variable TodoItem? editItem = null;
 
 	shared Boolean isEdit(TodoItem item) {
@@ -149,14 +149,16 @@ shared class TodoMvc() {
 										onClick(app.callableMethod(`TodoList.removeItem`, Tuple1(item.binding)).binding) 
 									}
 								},
-								input { 
-									attrType("text"),
-									attrClass("edit"),
-									propValue(item.attr(`TodoItem.description`).binding), 
-									onEnter(endEdit.binding),
-									onBlur(endEdit.binding),
-									doFocus(itemEdit.binding)
-								}
+								ShowIfTrue( itemEdit.binding, {
+									input { 
+										attrType("text"),
+										attrClass("edit"),
+										propValue(item.attr(`TodoItem.description`).binding), 
+										onEnter(endEdit.binding),
+										onBlur(endEdit.binding),
+										doFocus(itemEdit.binding)
+									}
+								})
 							}
 						} 
 					}

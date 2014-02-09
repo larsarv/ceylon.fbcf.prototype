@@ -1,8 +1,8 @@
-import eu.arvidson.ceylon.fbcf.base { TemplateDuplicationContext, Value, observe, ElementModifier, TemplateInstantiationContext, Linker, Binding }
+import eu.arvidson.ceylon.fbcf.base { TemplateDuplicationContext, Value, observe, ElementModifier, TemplateInstantiationContext, Linker, Binding, TemplateInstanceEvent, initializeEvent }
 
-class FokusController(dynamic node) {
-	variable Boolean current = false;
-	
+class FocusController(dynamic node, current) {
+	variable Boolean current;
+
 	shared void update(Boolean newVal) {
 		if (newVal) {
 			if (!current) {
@@ -16,15 +16,24 @@ class FokusController(dynamic node) {
 		}
 	}
 	
+	shared void handleInitializeEvent(TemplateInstanceEvent event) {
+		if (current) {
+			dynamic {
+				node.focus();
+			}
+		}
+	}
 }
 class FocusLinker<in Input>(node, Binding<Input, Value<Boolean, Nothing>> binding) satisfies Linker<Input> given Input satisfies Value {
 	shared actual dynamic node;
 	shared actual void instantiate(TemplateInstantiationContext ctx, dynamic node, Input input) {
-		FokusController controller;
+		value val = ctx.bind(input, binding);
+		FocusController controller;
 		dynamic {
-			controller = FokusController(node);
+			controller = FocusController(node, val.get());
 		}
-		observe(ctx.bind(input, binding), controller.update, ctx.registerEventHandler);
+		observe(val, controller.update, ctx.registerEventHandler);
+		ctx.registerEventHandler(controller.handleInitializeEvent, initializeEvent.asSet());
 	}
 	
 	shared actual Linker<Input> duplicate(TemplateDuplicationContext ctx, dynamic node) {

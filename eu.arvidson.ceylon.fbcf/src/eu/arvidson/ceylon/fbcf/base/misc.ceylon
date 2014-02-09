@@ -77,7 +77,11 @@ class ShowIfExistsLinker<in Input, out Get, in ArgumentSet, in OutputSet, out Ty
 	OutputBinding<Input,Value<Get,OutputSet>> output;
 	Template<Input,Type> fragmentTemplate;
 	
-	shared actual Linker<Input> duplicate(TemplateDuplicationContext ctx, dynamic node) => nothing;
+	shared actual Linker<Input> duplicate(TemplateDuplicationContext ctx, dynamic node) {
+		dynamic {
+			return ShowIfExistsLinker<Input,Get,ArgumentSet,OutputSet,Type>(node, argument, output, fragmentTemplate);
+		}
+	}
 	
 	shared actual void instantiate(TemplateInstantiationContext ctx, dynamic node, Input input) {
 		dynamic {
@@ -104,3 +108,83 @@ shared class ShowIfExists<in Input, out Get, in ArgumentSet, in OutputSet,out Ty
 	
 }
 
+class ShowIfTrueController<Input,Type>(node, bindingLookup, fragmentTemplate, input) given Input satisfies Value {
+	dynamic node;
+	BindingLookup bindingLookup;
+	Template<Input,Type> fragmentTemplate;
+	Input input;
+	
+	variable EventHandlers? eventHandlers = null;
+
+	shared void update(Boolean newVal) {
+		if (newVal) {
+			if (exists eventHandlers = eventHandlers) {
+			} else {
+				value eventHandlerRegistry = EventHandlerRegistry();
+				value instance = fragmentTemplate.instantiate(TemplateInstanceContext(bindingLookup, eventHandlerRegistry.registerEventHandler), input);
+				
+				value eventHandlers = this.eventHandlers = eventHandlerRegistry.createEventHandlers(); 
+				
+				dynamic {
+					node.appendChild(instance.node);
+				}
+
+				eventHandlers.triggerEvent(initializeEvent);
+			}
+		} else {
+			if (exists eventHandlers = eventHandlers) {
+				// Clear
+				dynamic {
+					while (node.firstChild) {
+						node.removeChild(node.firstChild);
+					}
+				}
+				eventHandlers.triggerEvent(disposeEvent);
+				this.eventHandlers = null;
+			}
+		}
+	}
+	
+	
+	shared void eventHandler(TemplateInstanceEvent event) {
+		if (exists eventHandlers = eventHandlers) {
+			eventHandlers.triggerEvent(event);
+		}
+	}
+} 
+
+class ShowIfTrueLinker<in Input, out Type>(node, condition, fragmentTemplate) satisfies Linker<Input> given Input satisfies Value {
+	shared actual dynamic node;
+	Binding<Input,Value<Boolean,Nothing>> condition;
+	Template<Input,Type> fragmentTemplate;
+	
+	shared actual Linker<Input> duplicate(TemplateDuplicationContext ctx, dynamic node) {
+		dynamic {
+			return ShowIfTrueLinker<Input,Type>(node, condition, fragmentTemplate);
+		}
+	}
+	
+	shared actual void instantiate(TemplateInstantiationContext ctx, dynamic node, Input input) {
+		dynamic {
+			value conditionValue = ctx.bind(input, condition);
+			value controller = ShowIfTrueController(node, ctx.bindingContext.getLookup(), fragmentTemplate, input);
+			observe(conditionValue, controller.update, ctx.registerEventHandler); 
+			ctx.registerEventHandler(controller.eventHandler, allEventsSet);
+		}
+	}
+}
+
+
+shared class ShowIfTrue<in Input,out Type>(condition, content) satisfies Component<Input,Type> given Input satisfies Value {
+	Binding<Input,Value<Boolean,Nothing>> condition;
+	{FragmentContent<Input,Type>+} content;
+	
+	shared actual Template<Input,Type> build() {
+		value fragmentTemplate = Fragment(content).build();
+		dynamic {
+			dynamic node = document.createElement("showiftrue");
+			return Template<Input,Type>(node, ShowIfTrueLinker(node, condition, fragmentTemplate));
+		}
+	}
+	
+}
