@@ -145,7 +145,7 @@ shared Component<Value<InputGet, InputSet>,HtmlFlow> simpleProgress<in InputGet,
 			attrRole("progressbar"), 
 			attrAria("valuenow", progressBinding), 
 			attrAria("valuemin", "0"), 
-			attrAria("valuemax", "0"),
+			attrAria("valuemax", "100"),
 			attrStyle(string { "width: ", progressBinding, "%" }),
 			span { attrClass("sr-only"), message } 
 		}
@@ -161,7 +161,7 @@ shared Component<Input,ProgressBar> progressBar<in Input>(ProgressType type, Int
 		attrRole("progressbar"), 
 		attrAria("valuenow", progress.string), 
 		attrAria("valuemin", "0"), 
-		attrAria("valuemax", "0"),
+		attrAria("valuemax", "100"),
 		attrStyle("width: ``progress``%"),
 		span { attrClass("sr-only"), message } 
  	};
