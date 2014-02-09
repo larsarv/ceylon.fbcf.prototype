@@ -1,5 +1,5 @@
 import eu.arvidson.ceylon.fbcf.html5 { nav, attrRole, HtmlFlow, attrClass, div, button_=button, attrType, attrData, span, a, b, attrHref, ul, li, HtmlLi, SimpleContent, h1, HtmlPhrasing, img, attrAlt, strong, attrStyle, attrAria }
-import eu.arvidson.ceylon.fbcf.base { Component, Value, stringList, string, ConstantOrBinding, rootBuilder }
+import eu.arvidson.ceylon.fbcf.base { Component, Value, stringList, string, ConstantOrBinding, rootBuilder, ShowIfExists }
 
 shared abstract class NavbarType(shared String clazz) of navbarInverse|navbarStandard {}
 shared object navbarInverse extends NavbarType("navbar-inverse") {}
@@ -98,8 +98,19 @@ shared object alertTypeInfo extends AlertType("alert-info") {}
 shared object alertTypeWarning extends AlertType("alert-warning") {}
 shared object alertTypeDanger extends AlertType("alert-danger") {}
 
-shared Component<Input,HtmlFlow> alert<in Input>(AlertType type, String? title, String message) given Input satisfies Value 
-		=> div { attrClass("alert ``type.clazz``"), strong { title }, " ", message };
+shared Component<Value<InputGet, InputSet>,HtmlFlow> alert<in InputGet,out InputSet>(type, title, message) {
+	AlertType type;
+	ConstantOrBinding<Value<InputGet, InputSet>, String?> title;
+	ConstantOrBinding<Value<InputGet, InputSet>, String> message;
+
+	value builder = rootBuilder<InputGet, InputSet>();
+	value titleBinding = builder.roroot<String>().binding;
+
+	return div { 
+		attrClass("alert ``type.clazz``"), 
+		ShowIfExists(builder.constOrBinding<String?>(title).binding, titleBinding, { strong { titleBinding } }), " ", message 
+	};
+}
 
 shared abstract class ProgressType(shared String clazz) of progressTypeStandard|progressTypeSuccess|progressTypeInfo|progressTypeWarning|progressTypeDanger {}
 shared object progressTypeStandard extends ProgressType("") {}
@@ -119,7 +130,11 @@ String toProgressString(Integer val) {
 		return val.string;
 	}
 }
-shared Component<Value<InputGet, InputSet>,HtmlFlow> simpleProgress<in InputGet,out InputSet>(ConstantOrBinding<Value<InputGet, InputSet>,ProgressType> type, ConstantOrBinding<Value<InputGet, InputSet>,Integer> progress, ConstantOrBinding<Value<InputGet, InputSet>,String> message) {
+shared Component<Value<InputGet, InputSet>,HtmlFlow> simpleProgress<in InputGet,out InputSet>(type, progress, message) {
+	ConstantOrBinding<Value<InputGet, InputSet>,ProgressType> type; 
+	ConstantOrBinding<Value<InputGet, InputSet>,Integer> progress; 
+	ConstantOrBinding<Value<InputGet, InputSet>,String> message;
+
 	value builder = rootBuilder<InputGet, InputSet>();
 	value progressBinding = builder.constOrBinding<Integer>(progress).fun(toProgressString).binding;
 

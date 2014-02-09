@@ -266,7 +266,7 @@ shared Binding<Value<Container,Nothing>,Value<Get,Nothing>> bindToFun<in Contain
 shared Binding<Value<Container,Nothing>,Value<Get,Nothing>> bindToMethod<in Container, out Get=Anything>(Method<Container,Get,[]> target) => MethodBinding<Value<Container,Nothing>,Container,Get>(target);
 
 
-shared class OutputBinding<in Input, out Result>() satisfies Binding<Input,Result> given Input satisfies Value given Result satisfies Value {
+shared class OutputBinding<in Input, Result>() satisfies Binding<Input,Result> given Input satisfies Value given Result satisfies Value {
 	shared actual Result bind(BindingContext ctx, Input input) {
 		throw Exception("Should never be called, binding should be registered in binding context with a value.");
 	}
