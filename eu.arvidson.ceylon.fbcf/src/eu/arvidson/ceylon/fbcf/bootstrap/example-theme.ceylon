@@ -98,6 +98,33 @@ class Theme() {
 					progressBar(progressTypeDanger, 10, "10% Complete (danger)")					
 				},
 				pageHeader("List groups"),
+				row {
+					column(deviceTypeSmall, 4, {
+						listGroup {
+							listGroupItem(false, null, "Cras justo odio"),
+							listGroupItem(false, null, "Dapibus ac facilisis in"),
+							listGroupItem(false, null, "Morbi leo risus"),
+							listGroupItem(false, null, "Porta ac consectetur ac"),
+							listGroupItem(false, null, "Vestibulum at eros")
+						}
+					}),
+					column(deviceTypeSmall, 4, {
+						linkListGroup {
+							linkListGroupItem("#", true, null, "Cras justo odio"),
+							linkListGroupItem("#", false, null, "Dapibus ac facilisis in"),
+							linkListGroupItem("#", false, null, "Morbi leo risus"),
+							linkListGroupItem("#", false, null, "Porta ac consectetur ac"),
+							linkListGroupItem("#", false, null, "Vestibulum at eros")
+						}
+					}),
+					column(deviceTypeSmall, 4, {
+						linkListGroup {
+							linkListGroupItem("#", true, "List group item heading", "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit."),
+							linkListGroupItem("#", false, "List group item heading", "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit."),
+							linkListGroupItem("#", false, "List group item heading", "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.")
+						}
+					})
+				},
 				pageHeader("Panels"),
 				pageHeader("Wells")
 			}

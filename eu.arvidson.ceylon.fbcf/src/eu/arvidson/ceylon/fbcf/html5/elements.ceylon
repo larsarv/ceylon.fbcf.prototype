@@ -66,7 +66,7 @@ shared Component<Input,HtmlFlow> pre<in Input>({CommonContent<Input,HtmlPhrasing
 shared Component<Input,HtmlFlow> blockquote<in Input>({CommonContent<Input,HtmlFlow>*} content = empty) given Input satisfies Value => Element<Input,HtmlFlow>("blockquote", content);
 shared Component<Input,HtmlFlow> ol<in Input>({ElementModifier<Input>|Component<Input,HtmlLi>*} content = empty) given Input satisfies Value => Element<Input,HtmlFlow>("ol", content);
 shared Component<Input,HtmlFlow> ul<in Input>({ElementModifier<Input>|Component<Input,HtmlLi>*} content = empty) given Input satisfies Value => Element<Input,HtmlFlow>("ul", content);
-shared Component<Input,HtmlLi> li<in Input>({CommonContent<Input,HtmlFlow>*} content = empty) given Input satisfies Value => Element<Input,HtmlLi>("li", content);
+shared Component<Input,Type> li<in Input,Type=HtmlLi>({CommonContent<Input,HtmlFlow>*} content = empty) given Input satisfies Value => Element<Input,Type>("li", content);
 shared Component<Input,HtmlFlow> dl<in Input>({ElementModifier<Input>|Component<Input,HtmlDt|HtmlDd>*} content = empty) given Input satisfies Value => Element<Input,HtmlFlow>("dl", content);
 shared Component<Input,HtmlDt> dt<in Input>({CommonContent<Input,HtmlPhrasing>*} content = empty) given Input satisfies Value => Element<Input,HtmlDt>("dt", content);
 shared Component<Input,HtmlDd> dd<in Input>({CommonContent<Input,HtmlPhrasing>*} content = empty) given Input satisfies Value => Element<Input,HtmlDd>("dd", content);
@@ -75,7 +75,8 @@ shared Component<Input,HtmlFigcaption> figcaption<in Input>({CommonContent<Input
 shared Component<Input,Type> div<in Input,Type=HtmlFlow>({CommonContent<Input,HtmlFlow>*} content = empty) given Input satisfies Value => Element<Input,Type>("div", content);
 shared Component<Input,HtmlFlow> main<in Input>({CommonContent<Input,HtmlFlow>*} content = empty) given Input satisfies Value => Element<Input,HtmlFlow>("main", content);
 // 4.6 Text-level semantics
-shared Component<Input,HtmlPhrasing> a<in Input>({CommonContent<Input,HtmlPhrasing>*} content = empty) given Input satisfies Value => Element<Input,HtmlPhrasing>("a", content);
+// TODO Fix??? a has transparent content model...
+shared Component<Input,Type> a<in Input, out Type=HtmlPhrasing>({CommonContent<Input,HtmlFlow>*} content = empty) given Input satisfies Value => Element<Input,Type>("a", content);
 shared Component<Input,HtmlPhrasing> em<in Input>({CommonContent<Input,HtmlPhrasing>*} content = empty) given Input satisfies Value => Element<Input,HtmlPhrasing>("em", content);
 shared Component<Input,HtmlPhrasing> strong<in Input>({CommonContent<Input,HtmlPhrasing>*} content = empty) given Input satisfies Value => Element<Input,HtmlPhrasing>("strong", content);
 shared Component<Input,HtmlPhrasing> small<in Input>({CommonContent<Input,HtmlPhrasing>*} content = empty) given Input satisfies Value => Element<Input,HtmlPhrasing>("small", content);

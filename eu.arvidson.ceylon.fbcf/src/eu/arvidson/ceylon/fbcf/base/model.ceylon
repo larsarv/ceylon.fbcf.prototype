@@ -812,6 +812,9 @@ shared class BindingBuilder<InputGet,InputSet,CurrentGet,CurrentSet>(binding) {
 	shared BindingBuilder<InputGet,InputSet,ResultGet,Nothing> methodWithArgs<ResultGet,Arguments>(Method<CurrentGet,ResultGet,Arguments> method, TupleBinding<Value<InputGet, InputSet>,Arguments> args) given Arguments satisfies Anything[] => BindingBuilder(MethodCallBinding(binding, method, args));
 	shared BindingBuilder<InputGet,InputSet,ResultGet(),Nothing> callableMethod<ResultGet,Arguments>(Method<CurrentGet,ResultGet,Arguments> method, TupleBinding<Value<InputGet, InputSet>,Arguments> args) given Arguments satisfies Anything[] => BindingBuilder(CallableMethodBinding(binding, method, args));
 
+	shared BindingBuilder<InputGet,InputSet,Boolean,Nothing> isNotNull() => fun((CurrentGet val) => !(val is Null));
+	shared BindingBuilder<InputGet,InputSet,Boolean,Nothing> isNull() => fun((CurrentGet val) => (val is Null));
+
 	shared BindingBuilder<InputGet,InputSet,ResultGet,Nothing> conditional<ResultGet,Type>(Type const, ResultGet thenResult, ResultGet elseResult) {
 		 return fun((CurrentGet val) {
 		 	if (is Object const, is Object val, const == val) {

@@ -1,5 +1,18 @@
-import eu.arvidson.ceylon.fbcf.html5 { nav, attrRole, HtmlFlow, attrClass, div, button_=button, attrType, attrData, span, a, b, attrHref, ul, li, HtmlLi, SimpleContent, h1, HtmlPhrasing, img, attrAlt, strong, attrStyle, attrAria }
-import eu.arvidson.ceylon.fbcf.base { Component, Value, stringList, string, ConstantOrBinding, rootBuilder, ShowIfExists }
+import eu.arvidson.ceylon.fbcf.html5 { nav, attrRole, HtmlFlow, attrClass, div, button_=button, attrType, attrData, span, a, p, b, attrHref, ul, li, HtmlLi, SimpleContent, h1, HtmlPhrasing, img, attrAlt, strong, attrStyle, attrAria, h4 }
+import eu.arvidson.ceylon.fbcf.base { Component, Value, stringList, string, ConstantOrBinding, rootBuilder, ShowIfExists, conditional, const, ShowIfTrue }
+
+shared Component<Input,HtmlFlow> row<in Input>({Component<Input, HtmlFlow>*} content) given Input satisfies Value
+		=> div({ attrClass("row"), *content });
+
+
+shared abstract class DeviceType(shared actual String string) of deviceTypeExtraSmall|deviceTypeSmall|deviceTypeMedium|deviceTypeLarge {}
+shared object deviceTypeExtraSmall extends DeviceType("xs") {}
+shared object deviceTypeSmall extends DeviceType("sm") {}
+shared object deviceTypeMedium extends DeviceType("md") {}
+shared object deviceTypeLarge extends DeviceType("lg") {}
+
+shared Component<Input,HtmlFlow> column<in Input>(DeviceType deviceType, Integer width, {Component<Input, HtmlFlow>*} content) given Input satisfies Value
+	=> div({ attrClass( "col-``deviceType.string``-``width.string``"), *content });
 
 shared abstract class NavbarType(shared String clazz) of navbarInverse|navbarStandard {}
 shared object navbarInverse extends NavbarType("navbar-inverse") {}
@@ -130,39 +143,84 @@ String toProgressString(Integer val) {
 		return val.string;
 	}
 }
+
+shared Component<Input,HtmlFlow> progress<in Input>({Component<Input, ProgressBar>*} bars) given Input satisfies Value 
+	=> div<Input> ({ attrClass<Input>("progress"), *bars });
+
+shared Component<Value<InputGet, InputSet>,ProgressBar> progressBar<in InputGet,out InputSet>(type, progress, message) {
+	ConstantOrBinding<Value<InputGet, InputSet>,ProgressType> type; 
+	ConstantOrBinding<Value<InputGet, InputSet>,Integer> progress; 
+	ConstantOrBinding<Value<InputGet, InputSet>,String> message;
+	
+	value builder = rootBuilder<InputGet, InputSet>();
+	value progressBinding = builder.constOrBinding<Integer>(progress).fun(toProgressString).binding;
+	
+	return div {
+		attrClass(stringList { "progress-bar", builder.constOrBinding<ProgressType>(type).attr(`ProgressType.clazz`).binding }), 
+		attrRole("progressbar"), 
+		attrAria("valuenow", progressBinding), 
+		attrAria("valuemin", "0"), 
+		attrAria("valuemax", "100"),
+		attrStyle(string { "width: ", progressBinding, "%" }),
+		span { attrClass("sr-only"), message } 
+	};
+}
+
 shared Component<Value<InputGet, InputSet>,HtmlFlow> simpleProgress<in InputGet,out InputSet>(type, progress, message) {
 	ConstantOrBinding<Value<InputGet, InputSet>,ProgressType> type; 
 	ConstantOrBinding<Value<InputGet, InputSet>,Integer> progress; 
 	ConstantOrBinding<Value<InputGet, InputSet>,String> message;
+	
+	return div { attrClass("progress"), progressBar(type, progress, message) };
+}
 
+shared interface LinkListGroupItem satisfies HtmlFlow {}
+
+shared Component<Input,HtmlFlow> linkListGroup<in Input>({Component<Input, LinkListGroupItem>*} items) given Input satisfies Value
+	=> div({ attrClass("list-group"), *items});
+
+shared Component<Value<InputGet, InputSet>,LinkListGroupItem> linkListGroupItem<in InputGet,out InputSet>(href, active, heading, text) {
+	ConstantOrBinding<Value<InputGet, InputSet>, String?> href;
+	ConstantOrBinding<Value<InputGet, InputSet>, Boolean> active;
+	ConstantOrBinding<Value<InputGet, InputSet>, String?> heading;
+	ConstantOrBinding<Value<InputGet, InputSet>, String?> text;
+	
 	value builder = rootBuilder<InputGet, InputSet>();
-	value progressBinding = builder.constOrBinding<Integer>(progress).fun(toProgressString).binding;
-
-	return div {
-		attrClass("progress"),
-		div {
-			attrClass(stringList { "progress-bar", builder.constOrBinding<ProgressType>(type).attr(`ProgressType.clazz`).binding }), 
-			attrRole("progressbar"), 
-			attrAria("valuenow", progressBinding), 
-			attrAria("valuemin", "0"), 
-			attrAria("valuemax", "100"),
-			attrStyle(string { "width: ", progressBinding, "%" }),
-			span { attrClass("sr-only"), message } 
-		}
+	value headingBuilder = builder.constOrBinding<String?>(heading);
+	value textBinding = builder.constOrBinding<String?>(text).binding;
+	return a {
+		attrHref(href),
+		attrClass(stringList {"list-group-item", conditional(builder.constOrBinding<Boolean>(active).binding, const("active"), const(null)) }),
+		ShowIfTrue(headingBuilder.isNotNull().binding, { 
+			h4 { attrClass("list-group-item-heading"), headingBuilder.binding },
+			p { attrClass("list-group-item-text"), textBinding } 
+		}),
+		ShowIfTrue(headingBuilder.isNull().binding, {
+			textBinding
+		})
 	};
 }
 
-shared Component<Input,HtmlFlow> progress<in Input>({Component<Input, ProgressBar>*} bars) given Input satisfies Value 
-		=> div<Input> ( bars.following(attrClass<Input>("progress")) ); // TODO FIX Once backend bug is fixed...
+shared interface ListGroupItem satisfies HtmlLi {}
+shared Component<Input,HtmlFlow> listGroup<in Input>({Component<Input, ListGroupItem>*} items) given Input satisfies Value
+		=> ul({ attrClass("list-group"), *items});
 
-shared Component<Input,ProgressBar> progressBar<in Input>(ProgressType type, Integer progress, String message) given Input satisfies Value {
-	return div<Input,ProgressBar> { 
-		attrClass("progress-bar ``type.clazz``"), 
-		attrRole("progressbar"), 
-		attrAria("valuenow", progress.string), 
-		attrAria("valuemin", "0"), 
-		attrAria("valuemax", "100"),
-		attrStyle("width: ``progress``%"),
-		span { attrClass("sr-only"), message } 
- 	};
+shared Component<Value<InputGet, InputSet>,ListGroupItem> listGroupItem<in InputGet,out InputSet>(active, heading, text) {
+	ConstantOrBinding<Value<InputGet, InputSet>, Boolean> active;
+	ConstantOrBinding<Value<InputGet, InputSet>, String?> heading;
+	ConstantOrBinding<Value<InputGet, InputSet>, String?> text;
+	
+	value builder = rootBuilder<InputGet, InputSet>();
+	value headingBuilder = builder.constOrBinding<String?>(heading);
+	value textBinding = builder.constOrBinding<String?>(text).binding;
+	return li {
+		attrClass(stringList {"list-group-item", conditional(builder.constOrBinding<Boolean>(active).binding, const("active"), const(null)) }),
+		ShowIfTrue(headingBuilder.isNotNull().binding, { 
+			h4 { attrClass("list-group-item-heading"), headingBuilder.binding },
+			p { attrClass("list-group-item-text"), textBinding } 
+		}),
+		ShowIfTrue(headingBuilder.isNull().binding, {
+			textBinding
+		})
+	};
 }
