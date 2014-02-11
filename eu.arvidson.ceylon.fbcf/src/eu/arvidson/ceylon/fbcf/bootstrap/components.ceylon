@@ -1,5 +1,8 @@
-import eu.arvidson.ceylon.fbcf.html5 { nav, attrRole, HtmlFlow, attrClass, div, button_=button, attrType, attrData, span, a, p, b, attrHref, ul, li, HtmlLi, SimpleContent, h1, HtmlPhrasing, img, attrAlt, strong, attrStyle, attrAria, h4, h3, CommonContent }
+import eu.arvidson.ceylon.fbcf.html5 { nav, attrRole, HtmlFlow, attrClass, div, button_=button, attrType, attrData, span, a, p, b, attrHref, ul, li, HtmlLi, SimpleContent, h1, HtmlPhrasing, img, attrAlt, strong, attrStyle, attrAria, h4, h3 }
 import eu.arvidson.ceylon.fbcf.base { Component, Value, stringList, string, ConstantOrBinding, rootBuilder, ShowIfExists, conditional, const, ShowIfTrue }
+
+shared Component<Input,HtmlFlow> container<in Input>({SimpleContent<Input, HtmlFlow>*} content) given Input satisfies Value
+		=> div({ attrClass("container"), *content });
 
 shared Component<Input,HtmlFlow> row<in Input>({Component<Input, HtmlFlow>*} content) given Input satisfies Value
 		=> div({ attrClass("row"), *content });
@@ -22,8 +25,7 @@ Component<Input,HtmlFlow> navbar<in Input>(NavbarType type, Boolean fixedTop, St
 	return nav<Input> {
 		attrClass("navbar ``type`` ``(fixedTop then "navbar-fixed-top" else "")``"), 
 		attrRole("navigation"),
-		div {
-			attrClass("container"),
+		container {
 			div { 
 				attrClass("navbar-header"),
 				button_ { 
@@ -88,8 +90,24 @@ shared object buttonTypeWarning extends ButtonType("btn-warning") {}
 shared object buttonTypeDanger extends ButtonType("btn-danger") {}
 shared object buttonTypeLink extends ButtonType("btn-link") {}
 
-shared Component<Input,HtmlPhrasing> button<in Input>(String name, ButtonSize size, ButtonType type) given Input satisfies Value 
-		=> button_ { attrType("button"), attrClass("btn ``size`` ``type``"), name };
+shared Component<Value<InputGet, InputSet>,HtmlPhrasing> button<in InputGet,out InputSet>(ConstantOrBinding<Value<InputGet, InputSet>, String> name, ButtonSize size, ButtonType type) {
+	return button_ { 
+		attrType("button"), 
+		attrClass("btn ``size`` ``type``"), 
+		name 
+	};
+}
+		
+
+shared Component<Value<InputGet, InputSet>,HtmlPhrasing> linkButton<in InputGet,out InputSet>(ConstantOrBinding<Value<InputGet, InputSet>, String> name, ConstantOrBinding<Value<InputGet, InputSet>, String?> href, ButtonSize size, ButtonType type) {
+	return a { 
+		attrClass("btn ``size`` ``type``"), 
+		attrRole("button"), 
+		attrHref(href), 
+		name 
+	};
+} 
+
 
 shared Component<Input,HtmlPhrasing> thumbnail<in Input>(String src, Integer width, Integer height, String description) given Input satisfies Value 
 		=> img { attrData("src", "``src``/``width``x``height``"), attrClass("img-thumbnail"), attrAlt(description) };

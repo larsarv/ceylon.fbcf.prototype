@@ -1,5 +1,6 @@
-import eu.arvidson.ceylon.fbcf.base { TemplateInstanceContext, simpleROValue, initializeAndAppendToBody, Value, Template, roroot, Fragment, Component, const }
-import eu.arvidson.ceylon.fbcf.html5 { HtmlFlow, li, attrClass, div, attrRole, h1, p, a, attrHref, attrType, HtmlLi }
+import eu.arvidson.ceylon.fbcf.base { TemplateInstanceContext, simpleROValue, initializeAndAppendToBody, Value, Template, roroot, Fragment, Component }
+import eu.arvidson.ceylon.fbcf.html5 { HtmlFlow, attrClass, div, attrRole, p, a, attrHref, HtmlLi }
+import eu.arvidson.ceylon.fbcf.bootstrap { buttonSizeExtraSmall, progress, menuDropdownDivider, panelTypePrimary, alertTypeInfo, progressTypeSuccess, panelTypeDefault, listGroup, button, pageHeader, listGroupItem, panelTypeDanger, panelTypeSuccess, menuItem, ButtonSize, alert, menuDropdownHeader, buttonTypeSuccess, buttonTypeLink, row, progressTypeInfo, thumbnail, buttonTypePrimary, alertTypeDanger, column, buttonSizeStandard, panelTypeInfo, menuDropdown, panel, linkListGroupItem, well, dropdown, deviceTypeSmall, alertTypeSuccess, buttonTypeWarning, linkListGroup, progressBar, navbarInverse, buttonTypeDefault, jumbotron, progressTypeStandard, progressTypeDanger, buttonTypeInfo, progressTypeWarning, navbarStandard, buttonSizeLarge, buttonTypeDanger, panelTypeWarning, simpleProgress, buttonSizeSmall, alertTypeWarning, navbar }
 class Theme() {
 	Component<Input,HtmlFlow> buttonExamples<in Input>(ButtonSize size) given Input satisfies Value {
 		return p { 
@@ -30,7 +31,7 @@ class Theme() {
 		}
 	];
 	Template<Value<Object, Nothing>,HtmlFlow> buildTemplate() {
-		value app = roroot<Object>();
+		//value app = roroot<Object>();
 		return Fragment<Value<Object, Nothing>,HtmlFlow> {
 			navbar {
 				type = navbarInverse;
@@ -47,7 +48,7 @@ class Theme() {
 						p { "This is a template for a simple marketing or informational website. 
 						     It includes a large callout called a jumbotron and three supporting pieces of content. 
 						     Use it as a starting point to create something more unique." },
-						p { a { attrHref("#"), attrClass("btn btn-primary btn-lg"), attrRole("button"), "Learn more »" } }
+						p { linkButton("Learn more »", null, buttonSizeLarge, buttonTypePrimary) }
 					]; 
 				},
 				pageHeader("Buttons"),
