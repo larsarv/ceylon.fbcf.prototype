@@ -1,5 +1,5 @@
-import eu.arvidson.ceylon.fbcf.html5 { nav, attrRole, HtmlFlow, attrClass, div, button_=button, attrType, attrData, span, a, p, b, attrHref, ul, li, HtmlLi, SimpleContent, h1, HtmlPhrasing, img, attrAlt, strong, attrStyle, attrAria, h4, h3 }
-import eu.arvidson.ceylon.fbcf.base { Component, Value, stringList, string, ConstantOrBinding, rootBuilder, ShowIfExists, conditional, const, ShowIfTrue }
+import eu.arvidson.ceylon.fbcf.html5 { nav, attrRole, HtmlFlow, attrClass, div, button_=button, attrType, attrData, span, a, p, b, attrHref, ul, li, HtmlLi, SimpleContent, h1, HtmlPhrasing, img, attrAlt, strong, attrStyle, attrAria, h4, h3, form, input, attrPlaceholder, propValue }
+import eu.arvidson.ceylon.fbcf.base { Component, Value, stringList, string, ConstantOrBinding, rootBuilder, ShowIfExists, conditional, const, ShowIfTrue, Binding }
 
 shared Component<Input,HtmlFlow> container<in Input>({SimpleContent<Input, HtmlFlow>*} content) given Input satisfies Value
 		=> div({ attrClass("container"), *content });
@@ -21,7 +21,13 @@ shared abstract class NavbarType(shared actual String string) of navbarInverse|n
 shared object navbarInverse extends NavbarType("navbar-inverse") {}
 shared object navbarStandard extends NavbarType("navbar-default") {}
 
-Component<Input,HtmlFlow> navbar<in Input>(NavbarType type, Boolean fixedTop, String header, Component<Input,HtmlLi> *items) given Input satisfies Value {
+Component<Input,HtmlFlow> navbar<in Input>(NavbarType type, Boolean fixedTop, String header, {Component<Input,HtmlLi>*} menuItems = {}, {Component<Input,HtmlFlow> *} formItems = {}) given Input satisfies Value {
+	value formItemsWithSpace = formItems.fold<SequenceBuilder<Component<Input,HtmlFlow>|String>>(SequenceBuilder<Component<Input,HtmlFlow>|String>(), (SequenceBuilder<Component<Input,HtmlFlow>|String> partial, Component<Input,HtmlFlow> elem) {
+		partial.append(" ");
+		partial.append(elem);
+		return partial;
+	}).sequence;
+
 	return nav<Input> {
 		attrClass("navbar ``type`` ``(fixedTop then "navbar-fixed-top" else "")``"), 
 		attrRole("navigation"),
@@ -42,13 +48,42 @@ Component<Input,HtmlFlow> navbar<in Input>(NavbarType type, Boolean fixedTop, St
 			},
 			div {
 				attrClass("navbar-collapse collapse"),
-				ul {
-					attrClass("nav navbar-nav"),
-					*items
-				}
+				!menuItems.empty then ul({ 
+					attrClass("nav navbar-nav"), 
+					*menuItems 
+				}) else null,
+				!formItems.empty then form({ 
+					attrClass("navbar-form navbar-right"), 
+					attrRole("form"),
+					*formItemsWithSpace
+				}) else null
 			}
 		}
 	};
+}
+
+shared Component<Input,HtmlFlow> formGroup<in Input>(Component<Input,HtmlFlow>* formItems) given Input satisfies Value 
+		=> div<Input> { attrClass("form-group"), *formItems };
+
+shared abstract class FormInputType(shared actual String string) of formInputTypeText|formInputTypePassword {}
+shared object formInputTypeText extends FormInputType("text") {}
+shared object formInputTypePassword extends FormInputType("password") {}
+
+shared Component<Value<InputGet, InputSet>,HtmlFlow> formInput<in InputGet,out InputSet>(FormInputType type, ConstantOrBinding<Value<InputGet, InputSet>, String?> placeHolder, Binding<Value<InputGet, InputSet>, Value<String?,String?>>? val) {
+	if (exists val) {
+		return input<Value<InputGet, InputSet>> { 
+			attrClass("form-control"),
+			attrType(type.string), 
+			attrPlaceholder(placeHolder),
+			propValue(val)
+		};
+	} else {
+		return input<Value<InputGet, InputSet>> { 
+			attrClass("form-control"),
+			attrType(type.string), 
+			attrPlaceholder(placeHolder)
+		};
+	}
 }
 
 shared Component<Input,HtmlLi> menuItem<in Input>(String href, String header, Boolean active = false) given Input satisfies Value 

@@ -13,7 +13,7 @@ class Theme() {
 			button("Link", size, buttonTypeLink)
 		};
 	}
-	{Component<Value<Object, Nothing>,HtmlLi>*} menuItems = [
+	{Component<Value<Object, Nothing>,HtmlLi>*} menuItems = {
 		menuItem("", "Home", true),
 		menuItem("abount", "About"),
 		menuItem("contact", "Contact"),
@@ -29,7 +29,7 @@ class Theme() {
 			menuItem("", "One more separated link")
 			];
 		}
-	];
+	};
 	Template<Value<Object, Nothing>,HtmlFlow> buildTemplate() {
 		//value app = roroot<Object>();
 		return Fragment<Value<Object, Nothing>,HtmlFlow> {
@@ -37,7 +37,7 @@ class Theme() {
 				type = navbarInverse;
 				fixedTop =  true;
 				header = "Bootstrap theme";
-				items = [*menuItems];
+				menuItems = menuItems;
 			},			
 			div {
 				attrClass("container theme-showcase"),
@@ -74,13 +74,13 @@ class Theme() {
 					type = navbarStandard;
 					fixedTop =  false;
 					header = "Project name";
-					items = [*menuItems];
-				},			
+					menuItems = menuItems;
+				},
 				navbar {
 					type = navbarInverse;
 					fixedTop =  false;
 					header = "Project name";
-					items = [*menuItems];
+					menuItems = menuItems;
 				},			
 				pageHeader("Alerts"),
 				alert(alertTypeSuccess, "Well done!", "You successfully read this important alert message."),

@@ -8,7 +8,7 @@ class Jumbotron() {
 				type = navbarInverse;
 				fixedTop =  true;
 				header = "Project name";
-				items = [];
+				formItems = { formGroup(formInput(formInputTypeText, "Email", null)), formGroup(formInput(formInputTypeText, "Password", null)), button("Sign in", buttonSizeStandard, buttonTypeSuccess) };
 			},			
 			
 			container {
